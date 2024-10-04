@@ -16,13 +16,12 @@ public class MailController {
         this.mailService = mailService;
     }
 
-    @PostMapping("/mailSend")
+    @PostMapping("/email-code")
     public HashMap<String, Object> mailSend(@RequestBody Map<String, String> mail) {
-        System.out.println(mail.get("mail"));
         HashMap<String, Object> map = new HashMap<>();
 
         try {
-            number = mailService.sendMail(mail.get("mail"));
+            number = mailService.sendMail(mail.get("email"));
             String num = String.valueOf(number);
 
             map.put("success", Boolean.TRUE);
@@ -35,9 +34,8 @@ public class MailController {
         return map;
     }
 
-    @GetMapping("/mailCheck")
-    public ResponseEntity<?> mailCheck(@RequestParam String userNumber) {
-
-        return ResponseEntity.ok(mailService.checkNumber(userNumber));
+    @GetMapping("/verify-email-code")
+    public ResponseEntity<?> mailCheck(@RequestBody Map<String, String> body) {
+        return ResponseEntity.ok(mailService.checkNumber(body.get("email"), body.get("authCode")));
     }
 }
