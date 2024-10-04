@@ -1,4 +1,4 @@
-package com.springboot;
+package com.springboot.configration;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
