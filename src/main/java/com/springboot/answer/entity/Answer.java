@@ -26,25 +26,8 @@ public class Answer {
     @Column(nullable = false)
     private LocalDateTime answerDate = LocalDateTime.now();
 
-    @Enumerated(value = EnumType.STRING)
-    @Column(nullable = false)
-    private AnswerStatus answerStatus = AnswerStatus.ANSWERED;
-
-    public enum AnswerStatus {
-        ANSWERED("답변 완료"),
-        CLOSED("문의 완료???????"),
-        ;
-
-        @Getter
-        private String answerStatus;
-
-        AnswerStatus(String answerStatus) {
-            this.answerStatus = answerStatus;
-        }
-
-
-
-    }
+    @Column(nullable = false, name = "LAST_MODIFIED_AT")
+    private LocalDateTime modifiedAt = LocalDateTime.now();
 
     // guardian, admin과 연결하기
 
