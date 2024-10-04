@@ -33,10 +33,12 @@ public class Question {
     @Column(nullable = false)
     private QuestionStatus questionStatus = QuestionStatus.PENDING;
 
+    @Column(nullable = false, name = "LAST_MODIFIED_AT")
+    LocalDateTime modifiedAt = LocalDateTime.now();
+
     public enum QuestionStatus {
         PENDING("답변 대기중"),
-        ANSWERED("답변 완료"),
-        CLOSED("문의 완료???????");
+        ANSWERED("답변 완료");
 
         @Getter
         private String questionStatus;

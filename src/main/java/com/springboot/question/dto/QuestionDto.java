@@ -46,7 +46,9 @@ public class QuestionDto {
         private String questionTitle;
         private String questionContent;
         private LocalDateTime questionDate;
+        private LocalDateTime modifiedAt;
         private Question.QuestionStatus questionStatus;
         private String responseContent;
+
     }
 }

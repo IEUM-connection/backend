@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -28,6 +29,8 @@ public class QuestionService {
                 .ifPresent(findQuestion::setQuestionTitle);
         Optional.ofNullable(question.getQuestionContent())
                 .ifPresent(findQuestion::setQuestionContent);
+
+        findQuestion.setModifiedAt(LocalDateTime.now());
 
         return questionRepository.save(findQuestion);
     }

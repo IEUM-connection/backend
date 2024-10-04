@@ -15,6 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -51,6 +52,8 @@ public class AnswerService {
 
         Optional.ofNullable(answer.getResponseContent())
                 .ifPresent(findAnswer::setResponseContent);
+
+        findAnswer.setModifiedAt(LocalDateTime.now());
 
         return answerRepository.save(findAnswer);
     }
