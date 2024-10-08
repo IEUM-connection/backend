@@ -86,7 +86,7 @@ public class GuardianService {
 
         // 만약 업데이트된 필드가 없다면 예외 발생
         if (!updated) {
-            throw new BusinessLogicException(ExceptionCode.NO_UPDATABLE_FIELDS);
+            // throw new BusinessLogicException(ExceptionCode.NO_UPDATABLE_FIELDS);
         }
 
         return guardianRepository.save(findGuardian);

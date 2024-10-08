@@ -14,6 +14,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -27,6 +28,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 @Configuration  // 스프링 설정 클래스임을 나타냄
 @EnableWebSecurity  // Spring Security를 활성화함
@@ -58,6 +60,7 @@ public class SecurityConfig {
                 .headers().frameOptions().sameOrigin()  // 동일 출처에서의 프레임 사용을 허용
                 .and()
                 .csrf().disable()  // CSRF 보호 비활성화
+                .cors(Customizer.withDefaults())
                 .authorizeRequests()  // URL별 요청 권한을 설정
                 .antMatchers("/h2/**").permitAll()  // H2 콘솔에 대한 요청을 모두 허용
                 .antMatchers(HttpMethod.POST, "/members").permitAll()  // 회원가입 요청 허용
@@ -67,7 +70,12 @@ public class SecurityConfig {
                 .antMatchers("/guardians/**").hasAnyRole("GUARDIAN", "ADMIN")  // 보호자 또는 관리자는 접근 가능
                 .antMatchers(HttpMethod.GET, "/members/**").hasAnyRole("MEMBER", "GUARDIAN", "ADMIN")  // 회원 정보 조회는 멤버, 보호자, 관리자가 가능
                 .antMatchers(HttpMethod.PATCH, "/members/**").hasAnyRole("GUARDIAN", "ADMIN")  // 회원 정보 수정은 보호자와 관리자가 가능
-                .antMatchers(HttpMethod.POST, "/auth/logout").hasAnyRole("GUARDIAN", "ADMIN")  // 로그아웃 요청은 보호자와 관리자가 가능
+                .antMatchers(HttpMethod.POST, "/auth/logout").hasAnyRole("GUARDIAN", "ADMIN")  // 로그아웃 요청은 보호자와 관리자가 가능 /api/identity
+                .antMatchers(HttpMethod.POST, "/api/identity").permitAll()  // 인증은 모두 다
+                .antMatchers(HttpMethod.POST, "/email-code").permitAll()  // 인증은 모두 다
+                .antMatchers(HttpMethod.POST, "/verify-email-code/**").permitAll()  // 인증은 모두 다
+                .antMatchers(HttpMethod.POST, "/find-password/**").permitAll()  // 비밀번호찾기는 모두 다
+                .antMatchers(HttpMethod.POST, "/find-email").permitAll()  // 이메일찾기는 모두 다
                 .anyRequest().authenticated()  // 나머지 모든 요청은 인증이 필요
                 .and()
                 .sessionManagement()  // 세션 관리 설정
@@ -96,16 +104,25 @@ public class SecurityConfig {
 
     @Bean  // CORS 설정을 위한 Bean
     CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("*"));  // 모든 출처를 허용
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PATCH", "DELETE"));  // GET, POST, PATCH, DELETE 메서드를 허용
-        configuration.addAllowedOrigin("http:");  // 특정 출처를 추가 허용 (현재는 'http:'로 되어 있지만 정확한 출처를 설정해야 함)
-        configuration.setExposedHeaders(Arrays.asList("Authorization", "Refresh"));  // Authorization, Refresh 헤더를 노출
-        configuration.addAllowedHeader("*");  // 모든 헤더 허용
-        configuration.addAllowedMethod("*");  // 모든 메서드 허용
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();  // URL 기반 CORS 설정 소스 생성
-        source.registerCorsConfiguration("/**", configuration);  // 모든 경로에 대해 CORS 설정 적용
-        return source;  // CORS 설정 반환
+//        CorsConfiguration configuration = new CorsConfiguration();
+//        configuration.setAllowedOrigins(Arrays.asList("*"));  // 모든 출처를 허용
+//        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PATCH", "DELETE"));  // GET, POST, PATCH, DELETE 메서드를 허용
+//        configuration.addAllowedOrigin("http:");  // 특정 출처를 추가 허용 (현재는 'http:'로 되어 있지만 정확한 출처를 설정해야 함)
+//        configuration.setExposedHeaders(Arrays.asList("Authorization", "Refresh"));  // Authorization, Refresh 헤더를 노출
+//        configuration.addAllowedHeader("*");  // 모든 헤더 허용
+//        configuration.addAllowedMethod("*");  // 모든 메서드 허용
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();  // URL 기반 CORS 설정 소스 생성
+//        source.registerCorsConfiguration("/**", configuration);  // 모든 경로에 대해 CORS 설정 적용
+//        return source;  // CORS 설정 반환
+        final CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOriginPatterns(Collections.singletonList("*"));
+        configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "DELETE", "PATCH", "OPTION"));
+        configuration.setAllowCredentials(true);
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
+        configuration.setExposedHeaders(Arrays.asList("Authorization", "Refresh"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 
     // 커스텀 필터 구성 클래스 정의
