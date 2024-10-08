@@ -4,6 +4,8 @@ import com.springboot.member.entity.Guardian;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.persistence.Column;
+
 public class GuardianDto {
 
     @Getter
@@ -13,7 +15,10 @@ public class GuardianDto {
         private String password;
         private String name;
         private String tel;
+        private String phone;
         private String address;
+        private String detailedAddress;
+        private String postalCode;
     }
 
     @Getter
@@ -21,7 +26,11 @@ public class GuardianDto {
     public static class Patch {
         private String name;
         private String tel;
+        private String phone;
         private String address;
+        private String detailedAddress;
+        private String postalCode;
+        private String status;
     }
 
     @Getter
@@ -32,13 +41,7 @@ public class GuardianDto {
         private String name;
         private String tel;
         private String address;
-
-        public Response(Guardian guardian) {
-            this.guardianId = guardian.getGuardianId();
-            this.email = guardian.getEmail();
-            this.name = guardian.getName();
-            this.tel = guardian.getTel();
-            this.address = guardian.getAddress();
-        }
     }
+
+
 }

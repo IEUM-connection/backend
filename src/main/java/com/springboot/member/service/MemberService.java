@@ -27,14 +27,11 @@ public class MemberService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
 
-        member.setName(updatedMember.getName());
-        member.setTel(updatedMember.getTel());
-        member.setAddress(updatedMember.getAddress());
-        member.setDetailedAddress(updatedMember.getDetailedAddress());
-        member.setPostalCode(updatedMember.getPostalCode());
-        member.setEmergencyContact(updatedMember.getEmergencyContact());
-        member.setNotes(updatedMember.getNotes());
-        member.setMedicalHistory(updatedMember.getMedicalHistory());
+        Optional.ofNullable(updatedMember.getName()).ifPresent(member::setName);
+        Optional.ofNullable(updatedMember.getTel()).ifPresent(member::setTel);
+        Optional.ofNullable(updatedMember.getAddress()).ifPresent(member::setAddress);
+        Optional.ofNullable(updatedMember.getDetailedAddress()).ifPresent(member::setDetailedAddress);
+        Optional.ofNullable(updatedMember.getPostalCode()).ifPresent(member::setPostalCode);
 
         return memberRepository.save(member);
     }
@@ -60,14 +57,19 @@ public class MemberService {
         member.setAdminNote(notes); // 관리자 코멘트 필드 추가
         return memberRepository.save(member);
     }
+
+    // 멤버 조회 (구청 위치 기반)
+    public List<Member> getMembersByLocation(String location) {
+        return memberRepository.findByAddressContaining(location);
+    }
+
+    public List<Member> searchMembers(String query, int age, String medicalHistory) {
+        return memberRepository.findByNameContainingAndAgeAndMedicalHistoryContaining(query, age, medicalHistory);
+    }
 //
-//    public List<Member> searchMembers(String query, int age, String medicalHistory) {
-//        return memberRepository.findByNameContainingAndAgeAndMedicalHistoryContaining(query, age, medicalHistory);
-//    }
-////
-//    public List<Member> getMembersByStatus(String status) {
-//        return memberRepository.findByStatus(status);
-//    }
+    public List<Member> getMembersByStatus(String status) {
+        return memberRepository.findByMemberStatus(status);
+    }
 
 
 }

@@ -4,19 +4,17 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-
-
 import javax.persistence.*;
 
 import java.time.LocalDate;
-import static com.springboot.member.entity.Member.MemberStatus.*;
+
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "MEMBER")
 public class Member {
 
     @Id
@@ -51,6 +49,7 @@ public class Member {
     private String emergencyContact;
 
     private int age;
+
     @Column(nullable = true)
     private String notes;
 
@@ -62,6 +61,12 @@ public class Member {
 
     @Column(nullable = true)
     private int powerUsage;
+
+    @Column(nullable = true)
+    private String latitude;
+
+    @Column(nullable = true)
+    private String  longitude;
 
     @Column(nullable = true)
     private int phoneInactiveDuration;
@@ -94,10 +99,11 @@ public class Member {
 
     public enum MemberStatus {
         ACTIVE,      // 활성 상태
-        AWAITING_APPROVAL,  //
+        AWAITING_APPROVAL,
         MEMBER_QUIT, // 탈퇴한 회원
         SUSPENDED    // 정지된 회원
     }
+
 
 
 }

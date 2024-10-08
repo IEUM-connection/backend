@@ -10,4 +10,6 @@ public interface GuardianRepository extends JpaRepository<Guardian, Long> {
     Optional<Guardian> findByEmail(String email);
 
     boolean existsByEmail(String email);
+
+
 }

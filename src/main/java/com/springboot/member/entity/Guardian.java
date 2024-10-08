@@ -14,6 +14,7 @@ import javax.persistence.*;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "GUARDIAN")
 public class Guardian {
 
     @Id
@@ -45,6 +46,8 @@ public class Guardian {
 //    public Collection<? extends GrantedAuthority> getAuthorities() {
 //        return List.of();
 //    }
+
+
 
 
     @Enumerated(EnumType.STRING)

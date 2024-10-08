@@ -14,7 +14,9 @@ import javax.persistence.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Admin {
+@Table(name = "ADMIN")
+public class Admin{
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long adminId;
@@ -25,20 +27,19 @@ public class Admin {
     @Column(nullable = false)
     private String location;
 
+
     @Column(unique = true)
     private String adminCode;
 
-    private String affiliation;
 
-    private Long serviceId;
-//
-//    public Collection<? extends GrantedAuthority> getAuthorities() {
-//        return java.util.List.of();
-//    }
+
+    @Column(nullable = false)
+    private String role;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 20, nullable = false)
     private AdminStatus adminStatus = AdminStatus.ADMIN_ACTIVE;
+
 
 
     public enum AdminStatus {
