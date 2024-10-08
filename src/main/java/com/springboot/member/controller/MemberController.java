@@ -30,14 +30,14 @@ public class MemberController {
         return ResponseEntity.ok(responseDto);
     }
 
-    @GetMapping("/{memberId}")
+    @GetMapping("/{member-id}")
     public ResponseEntity<MemberDto.Response> getMember(@PathVariable Long memberId) {
         Member member = memberService.getMember(memberId);
         MemberDto.Response responseDto = memberMapper.memberToResponseDto(member);
         return ResponseEntity.ok(responseDto);
     }
 
-    @PatchMapping("/{memberId}")
+    @PatchMapping("/{member-id}")
     public ResponseEntity<MemberDto.Response> updateMember(@PathVariable Long memberId,
                                                            @RequestBody MemberDto.Patch patchDto) {
         Member member = memberService.getMember(memberId);
@@ -47,14 +47,15 @@ public class MemberController {
         return ResponseEntity.ok(responseDto);
     }
 
-    @DeleteMapping("/{memberId}")
+    @DeleteMapping("/{member-id}")
     public ResponseEntity<Void> deleteMember(@PathVariable Long memberId) {
         memberService.quitMember(memberId);
         return ResponseEntity.noContent().build();
     }
 
 
-    @PatchMapping("/{memberId}/notes")
+    @PatchMapping("/{member-id}/notes")
+    //얘는 가디언이나 어드민만 고치고 올릴 수 있게
     public ResponseEntity<MemberDto.Response> addAdminComment(@PathVariable Long memberId, @RequestBody String notes) {
         Member member = memberService.addAdminComment(memberId, notes);
         MemberDto.Response responseDto = memberMapper.memberToResponseDto(member);

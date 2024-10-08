@@ -6,12 +6,10 @@ import com.springboot.exception.ExceptionCode;
 import com.springboot.member.entity.Guardian;
 import com.springboot.member.repository.GuardianRepository;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
 
 import java.util.Optional;
 
@@ -20,104 +18,78 @@ import static com.springboot.member.entity.Guardian.GuardianStatus.*;
 @Service
 public class GuardianService {
 
-//
-//    private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
     private final GuardianRepository guardianRepository;
-//    private final ApplicationEventPublisher publisher;
+    private final ApplicationEventPublisher publisher;
 
-
-
-    public GuardianService( GuardianRepository guardianRepository, ApplicationEventPublisher publisher) {
-//        this.passwordEncoder = passwordEncoder;
+    public GuardianService(GuardianRepository guardianRepository, ApplicationEventPublisher publisher, PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
         this.guardianRepository = guardianRepository;
-//        this.publisher = publisher;
-
+        this.publisher = publisher;
     }
 
-    public Guardian verifyGuardianCredentials(String email, String password) {
-        Guardian guardian = new Guardian();
-        return guardian;
+    public Guardian getGuardian(Long guardianId) {
+        return guardianRepository.findById(guardianId)
+                .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
     }
 
     public Guardian createGuardian(Guardian guardian) {
-        // TODO should business logic
-
-
         verifyExistsEmail(guardian.getEmail());
-
-
-//        String encryptedPassword = passwordEncoder.encode(guardian.getPassword());
-//        guardian.setPassword(encryptedPassword);
-
-//
-//        String role = authorityUtils.createRole(guardian.getEmail());
-//        guardian.setRole(role);
-        guardian.setPassword("123");
+        String encryptedPassword = passwordEncoder.encode(guardian.getPassword());
+        guardian.setPassword(encryptedPassword);
+        guardian.setRole("ROLE_GUARDIAN"); // 고정된 역할로 설정
         Guardian savedGuardian = guardianRepository.save(guardian);
 
-      //  publisher.publishEvent(new GuardianRegistrationApplicationEvent(this, savedGuardian));
+        //publisher.publishEvent(new GuardianRegistrationApplicationEvent(this, savedGuardian));
         return savedGuardian;
     }
 
-    public Guardian updateGuardian(Guardian guardian) {
-        // TODO should business logic
-
-        Guardian findGuardian = findVerifiedGuardian(guardian.getGuardianId());
-
-        if (guardian.getName() != null) {
-            findGuardian.setName(guardian.getName());
-        }
-        if (guardian.getTel() != null) {
-            findGuardian.setTel(guardian.getTel());
-        }
-        if (guardian.getPhone() != null) {
-            findGuardian.setPhone(guardian.getPhone());
-        }
-        Optional.ofNullable(guardian.getAddress())
-                .ifPresent(address -> findGuardian.setAddress(address));
-
-        return guardianRepository.save(findGuardian);
-    }
-
-    public Guardian updateGuardianPassword(Guardian guardian) {
-        // TODO should business logic
-
-        Guardian findGuardian = findVerifiedGuardian(guardian.getGuardianId());
-
-        Optional.ofNullable(guardian.getPassword())
-                .ifPresent(password -> findGuardian.setPassword(password));
-        return guardianRepository.save(findGuardian);
-    }
-
-
-
-    public Guardian findGuardian(long guardianId) {
-        // TODO should business logic
-
-        return findVerifiedGuardian(guardianId);
-    }
-
-    public Guardian findGuardian(long guardianId, String email) {
-        // TODO should business logic
-
-        return findVerifiedGuardian(guardianId);
-    }
-
-
-    public Page<Guardian> findGuardians(int page, int size) {
-        // TODO should business logic
-
-        return guardianRepository.findAll(PageRequest.of(page, size, Sort.by("guardianId").descending()));
-
-    }
-
-    public void deleteGuardian(long guardianId) {
-        // TODO should business logic
+    public Guardian updateGuardian(Long guardianId, Guardian guardian) {
         Guardian findGuardian = findVerifiedGuardian(guardianId);
-        findGuardian.setGuardianStatus(GUARDIAN_QUIT);
-// 가디언이랑 연결된 서비스 > 사용자도 지워져야하는가
-        guardianRepository.save(findGuardian);
-        //throw new BusinessLogicException(ExceptionCode.NOT_IMPLEMENTATION);
+        boolean updated = false;
+
+        // Optional 필드 업데이트 (업데이트 시 updated 플래그를 true로 설정)
+        if (Optional.ofNullable(guardian.getName()).isPresent()) {
+            findGuardian.setName(guardian.getName());
+            updated = true;
+        }
+
+        if (Optional.ofNullable(guardian.getTel()).isPresent()) {
+            findGuardian.setTel(guardian.getTel());
+            updated = true;
+        }
+
+        if (Optional.ofNullable(guardian.getPhone()).isPresent()) {
+            findGuardian.setPhone(guardian.getPhone());
+            updated = true;
+        }
+
+        if (Optional.ofNullable(guardian.getAddress()).isPresent()) {
+            findGuardian.setAddress(guardian.getAddress());
+            updated = true;
+        }
+
+        if (Optional.ofNullable(guardian.getDetailedAddress()).isPresent()) {
+            findGuardian.setDetailedAddress(guardian.getDetailedAddress());
+            updated = true;
+        }
+
+        if (Optional.ofNullable(guardian.getPostalCode()).isPresent()) {
+            findGuardian.setPostalCode(guardian.getPostalCode());
+            updated = true;
+        }
+
+        if (Optional.ofNullable(guardian.getGuardianStatus()).isPresent()) {
+            findGuardian.setGuardianStatus(guardian.getGuardianStatus());
+            updated = true;
+        }
+
+        // 만약 업데이트된 필드가 없다면 예외 발생
+        if (!updated) {
+            throw new BusinessLogicException(ExceptionCode.NO_UPDATABLE_FIELDS);
+        }
+
+        return guardianRepository.save(findGuardian);
     }
 
     public void quitGuardian(long guardianId) {
@@ -126,23 +98,9 @@ public class GuardianService {
         if (findGuardian.getGuardianStatus() != GUARDIAN_ACTIVE) {
             throw new BusinessLogicException(ExceptionCode.CANNOT_CHANGE_GUARDIAN_STATUS);
         }
-        findGuardian.setGuardianStatus(Guardian.GuardianStatus.GUARDIAN_QUIT);
-        guardianRepository.save(findGuardian);
-
-
-    }
-
-
-    public void sleepGuardian(long guardianId) {
-        Guardian findGuardian = findVerifiedGuardian(guardianId);
-
-        if (findGuardian.getGuardianStatus() != GUARDIAN_ACTIVE) {
-            throw new BusinessLogicException(ExceptionCode.CANNOT_CHANGE_GUARDIAN_STATUS);
-        }
-        findGuardian.setGuardianStatus(Guardian.GuardianStatus.GUARDIAN_SLEEP);
+        findGuardian.setGuardianStatus(GUARDIAN_QUIT);
         guardianRepository.save(findGuardian);
     }
-
 
     public Guardian findVerifiedGuardian(Long guardianId) {
         Optional<Guardian> optionalGuardian = guardianRepository.findById(guardianId);
@@ -153,19 +111,6 @@ public class GuardianService {
     private void verifyExistsEmail(String email) {
         Optional<Guardian> guardian = guardianRepository.findByEmail(email);
         if (guardian.isPresent()) throw new BusinessLogicException(ExceptionCode.GUARDIAN_EXISTS);
-    }
-
-
-    @Transactional(readOnly = true)
-    public Guardian findVerifiedGuardian(String email) {
-        Optional<Guardian> optionalGuardian = guardianRepository.findByEmail(email);
-        Guardian findGuardian = optionalGuardian.orElseThrow(() ->
-                new BusinessLogicException(ExceptionCode.GUARDIAN_NOT_FOUND));
-        return findGuardian;
-    }
-
-    public boolean isEmailDuplicate(String email) {
-        return !guardianRepository.existsByEmail(email);
     }
 }
 
