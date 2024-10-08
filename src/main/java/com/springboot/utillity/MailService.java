@@ -1,5 +1,7 @@
 package com.springboot.utillity;
 
+import com.springboot.exception.BusinessLogicException;
+import com.springboot.exception.ExceptionCode;
 import org.apache.commons.codec.CharEncoding;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -69,6 +71,7 @@ public class MailService {
                 message.saveChanges();
             } catch (MessagingException e) {
                 e.printStackTrace();
+                throw new BusinessLogicException(ExceptionCode.EMAIL_NOT_AUTH);
             }
         }else {
             System.out.println("message is null");
