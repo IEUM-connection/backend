@@ -76,6 +76,9 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.POST, "/verify-email-code/**").permitAll()  // 인증은 모두 다
                 .antMatchers(HttpMethod.POST, "/find-password/**").permitAll()  // 비밀번호찾기는 모두 다
                 .antMatchers(HttpMethod.POST, "/find-email").permitAll()  // 이메일찾기는 모두 다
+                .antMatchers(HttpMethod.POST, "/questions").hasAnyRole("GUARDIAN", "ADMIN")  // 보호자 또는 관리자가 문의사항에 접근 가능
+                .antMatchers(HttpMethod.POST, "/answers").hasAnyRole( "ADMIN")  // 관리자가 문의사항 답변에 접근
+                .antMatchers(HttpMethod.GET, "/questions/**").permitAll()
                 .anyRequest().authenticated()  // 나머지 모든 요청은 인증이 필요
                 .and()
                 .sessionManagement()  // 세션 관리 설정

@@ -1,4 +1,4 @@
-package com.springboot.RegistrationNumber.service;
+package com.springboot.registrationNumber.service;
 
 // 필요한 라이브러리 임포트
 import org.springframework.beans.factory.annotation.Value;
