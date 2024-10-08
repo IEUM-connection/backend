@@ -65,13 +65,13 @@ public class SecurityConfig {
                 .antMatchers("/h2/**").permitAll()  // H2 콘솔에 대한 요청을 모두 허용
                 .antMatchers(HttpMethod.POST, "/members").permitAll()  // 회원가입 요청 허용
                 .antMatchers(HttpMethod.POST, "/guardians").permitAll()  // 보호자 가입 요청 허용
-                .antMatchers("/auth/login/**").permitAll()  // 로그인 관련 요청 허용
+                .antMatchers("/auth/login").permitAll()  // 로그인 관련 요청 허용
                 .antMatchers("/admin/**").hasRole("ADMIN")  // 관리자 페이지에 접근하려면 'ADMIN' 권한 필요
                 .antMatchers("/guardians/**").hasAnyRole("GUARDIAN", "ADMIN")  // 보호자 또는 관리자는 접근 가능
                 .antMatchers(HttpMethod.GET, "/members/**").hasAnyRole("MEMBER", "GUARDIAN", "ADMIN")  // 회원 정보 조회는 멤버, 보호자, 관리자가 가능
                 .antMatchers(HttpMethod.PATCH, "/members/**").hasAnyRole("GUARDIAN", "ADMIN")  // 회원 정보 수정은 보호자와 관리자가 가능
                 .antMatchers(HttpMethod.POST, "/auth/logout").hasAnyRole("GUARDIAN", "ADMIN")  // 로그아웃 요청은 보호자와 관리자가 가능 /api/identity
-                .antMatchers(HttpMethod.POST, "/api/identity").permitAll()  // 인증은 모두 다
+                .antMatchers(HttpMethod.POST, "/api/identity/**").permitAll()  // 인증은 모두 다
                 .antMatchers(HttpMethod.POST, "/email-code").permitAll()  // 인증은 모두 다
                 .antMatchers(HttpMethod.POST, "/verify-email-code/**").permitAll()  // 인증은 모두 다
                 .antMatchers(HttpMethod.POST, "/find-password/**").permitAll()  // 비밀번호찾기는 모두 다
