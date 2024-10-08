@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,8 +33,9 @@ public class QuestionController {
     private final QuestionService questionService;
 
     @PostMapping
-    public ResponseEntity postQuestion(@Valid @RequestBody QuestionDto.Post requestBody) {
-        Question createQuestion = questionService.createQuestion(questionMapper.questionPostDtoToQuestion(requestBody));
+    public ResponseEntity postQuestion(@Valid @RequestBody QuestionDto.Post requestBody,
+                                       Authentication authentication) {
+        Question createQuestion = questionService.createQuestion(questionMapper.questionPostDtoToQuestion(requestBody), authentication);
 
         URI location = UriCreator.createUri(DEFAULT_QUESTION_URL, createQuestion.getQuestionId());
         return ResponseEntity.created(location).build();
@@ -41,17 +43,19 @@ public class QuestionController {
 
     @PatchMapping("/{question-id}")
     public ResponseEntity patchQuestion(@PathVariable("question-id") @Positive long questionId,
-                                        @Valid @RequestBody QuestionDto.Patch requestBody) {
+                                        @Valid @RequestBody QuestionDto.Patch requestBody,
+                                        Authentication authentication) {
         requestBody.setQuestionId(questionId);
-        Question question = questionService.updateQuestion(questionMapper.questionPatchDtoToQuestion(requestBody));
+        Question question = questionService.updateQuestion(questionMapper.questionPatchDtoToQuestion(requestBody), authentication);
         return new ResponseEntity(
                 new SingleResponseDto<>(questionMapper.questionToQuestionResponseDto(question)), HttpStatus.OK
         );
     }
 
     @GetMapping("/{question-id}")
-    public ResponseEntity getQuestion(@PathVariable("question-id") @Positive long questionId) {
-        Question question = questionService.findQuestion(questionId);
+    public ResponseEntity getQuestion(@PathVariable("question-id") @Positive long questionId,
+                                      Authentication authentication) {
+        Question question = questionService.findQuestion(questionId, authentication);
         return new ResponseEntity<>(
                 new SingleResponseDto<>(questionMapper.questionToQuestionResponseDto(question)), HttpStatus.OK
         );
@@ -60,7 +64,8 @@ public class QuestionController {
     @GetMapping
     public ResponseEntity getQuestions(@Positive @RequestParam int page,
                                        @Positive @RequestParam int size,
-                                       @RequestParam String sort) {
+                                       @RequestParam String sort,
+                                       Authentication authentication) {
 
         // sort 변수를 "_"를 기준으로 나누어 첫 번째 부분으로 정렬 기준을 설정
         Sort sortQuestion = Sort.by(sort.split("_")[0]).ascending();
@@ -71,7 +76,7 @@ public class QuestionController {
         }
 
 
-        Page<Question> pageQuestion = questionService.findQuestions(page - 1, size, sortQuestion);
+        Page<Question> pageQuestion = questionService.findQuestions(page - 1, size, sortQuestion, authentication);
         List<Question> questions = pageQuestion.getContent();
         return new ResponseEntity<>(
                 new MultiResponseDto<>(questionMapper.questionsToQuestionResponseDtos(questions), pageQuestion), HttpStatus.OK
@@ -79,8 +84,9 @@ public class QuestionController {
     }
 
     @DeleteMapping("/{question-id}")
-    public ResponseEntity deleteQuestions(@PathVariable("question-id") @Positive long questionId) {
-        questionService.deleteQuestion(questionId);
+    public ResponseEntity deleteQuestions(@PathVariable("question-id") @Positive long questionId,
+                                          Authentication authentication) {
+        questionService.deleteQuestion(questionId, authentication);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 }

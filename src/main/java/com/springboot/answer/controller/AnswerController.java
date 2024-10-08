@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,8 +36,9 @@ public class AnswerController {
     private final AnswerService answerService;
 
     @PostMapping
-    public ResponseEntity postAnswer(@Valid @RequestBody AnswerDto.Post requestBody) {
-        Answer createAnswer = answerService.createAnswer(answerMapper.answerPostDtoToAnswer(requestBody));
+    public ResponseEntity postAnswer(@Valid @RequestBody AnswerDto.Post requestBody,
+                                     Authentication authentication) {
+        Answer createAnswer = answerService.createAnswer(answerMapper.answerPostDtoToAnswer(requestBody), authentication);
 
         URI location = UriCreator.createUri(DEFAULT_ANSWER_URL, createAnswer.getAnswerId());
         return ResponseEntity.created(location).build();
@@ -44,9 +46,10 @@ public class AnswerController {
 
     @PatchMapping("/{answer-id}")
     public ResponseEntity patchAnswer(@PathVariable("answer-id") @Positive long answerId,
-                                      @Valid @RequestBody AnswerDto.Patch requestBody) {
+                                      @Valid @RequestBody AnswerDto.Patch requestBody,
+                                      Authentication authentication) {
         requestBody.setAnswerId(answerId);
-        Answer answer = answerService.updateAnswer(answerMapper.answerPatchDtoToAnswer(requestBody));
+        Answer answer = answerService.updateAnswer(answerMapper.answerPatchDtoToAnswer(requestBody), authentication);
         return new ResponseEntity(
                 new SingleResponseDto<>(answerMapper.answerToAnswerResponseDto(answer)), HttpStatus.OK
         );
@@ -54,6 +57,7 @@ public class AnswerController {
 
     @GetMapping("/{answer-id}")
     public ResponseEntity getAnswer(@PathVariable("answer-id") @Positive long answerId) {
+
         Answer answer = answerService.findAnswer(answerId);
         return new ResponseEntity(
                 new SingleResponseDto<>(answerMapper.answerToAnswerResponseDto(answer)), HttpStatus.OK
@@ -63,7 +67,9 @@ public class AnswerController {
     @GetMapping
     public ResponseEntity getAnswers(@Positive @RequestParam int page,
                                      @Positive @RequestParam int size,
-                                     @RequestParam String sort) {
+                                     @RequestParam String sort,
+                                     Authentication authentication) {
+
         // sort 변수를 "_"를 기준으로 나누어 첫 번째 부분으로 정렬 기준을 설정
         Sort sortAnswer = Sort.by(sort.split("_")[0]).ascending();
 
@@ -72,7 +78,7 @@ public class AnswerController {
             sortAnswer = sortAnswer.descending();  // 내림차순으로 변경
         }
 
-        Page<Answer> pageAnswer = answerService.findAnswers(page - 1, size, sortAnswer);
+        Page<Answer> pageAnswer = answerService.findAnswers(page - 1, size, sortAnswer, authentication);
         List<Answer> answers = pageAnswer.getContent();
         return new ResponseEntity<>(
                 new MultiResponseDto<>(answerMapper.answersToAnswerResponseDtos(answers), pageAnswer), HttpStatus.OK
@@ -80,8 +86,9 @@ public class AnswerController {
     }
 
     @DeleteMapping("/{answer-id}")
-    public ResponseEntity deleteAnswer(@PathVariable("answer-id") @Positive long answerId) {
-        answerService.deleteAnswer(answerId);
+    public ResponseEntity deleteAnswer(@PathVariable("answer-id") @Positive long answerId,
+                                       Authentication authentication) {
+        answerService.deleteAnswer(answerId, authentication);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 }

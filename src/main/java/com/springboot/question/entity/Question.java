@@ -1,6 +1,8 @@
 package com.springboot.question.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.springboot.answer.entity.Answer;
+import com.springboot.member.entity.Guardian;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -49,6 +51,11 @@ public class Question {
     }
 
     // guardian과 연결하기
+    @JsonBackReference
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "GUARDIAN_ID")
+    private Guardian guardian;
+
 
     @OneToOne(mappedBy = "question", orphanRemoval = true)
     private Answer answer;

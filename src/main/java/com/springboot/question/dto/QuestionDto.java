@@ -43,6 +43,7 @@ public class QuestionDto {
     @AllArgsConstructor
     public static class Response {
         private long questionId;
+        private String name;
         private String questionTitle;
         private String questionContent;
         private LocalDateTime questionDate;

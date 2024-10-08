@@ -27,5 +27,8 @@ public class JwtAuthorityUtils {
                 .collect(Collectors.toList());
     }
 
+    public List<GrantedAuthority> createAuthorities(String role){
+        return List.of(new SimpleGrantedAuthority(role));
+    }
 
 }
