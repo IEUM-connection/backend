@@ -48,8 +48,7 @@ public class GuardianController {
 
     @GetMapping("/check-email")
     public ResponseEntity checkEmailDuplicate(@RequestBody GuardianDto.EmailCheckDto requestBody){
-        //매퍼로 매핑 requestBody -> member.nickName으로 바꿔줘야함
-        //EmailCheckDtoToNickName
+
         boolean isDuplicate = guardianService.isEmailDuplicate(requestBody.getEmail());
 
         GuardianDto.Check responseDto = new  GuardianDto.Check(isDuplicate);
@@ -57,6 +56,7 @@ public class GuardianController {
         return new ResponseEntity<>(
                 new SingleResponseDto<>(responseDto), HttpStatus.OK);
     }
+
 
 
 
