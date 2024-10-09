@@ -10,6 +10,7 @@ import java.util.Properties;
 
 @Configuration
 public class MailConfig {
+
     @Value("${registration.mail.username}")
     private String fromMail;
     @Value("${registration.mail.password}")

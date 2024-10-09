@@ -19,6 +19,7 @@ import java.time.Duration;
 public class MailService {
 
     private final JavaMailSender javaMailSender;
+  
     @Value("${registration.mail.username}")
     private String senderEmail;
     private int number;

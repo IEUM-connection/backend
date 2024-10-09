@@ -2,11 +2,12 @@ package com.springboot.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 
 @AllArgsConstructor
+@Getter
 public enum ExceptionCode {
     QUESTION_NOT_FOUND(404,"Question Not Found"),
-
     ANSWER_NOT_FOUND(404,"Answer Not Found"),
     GUARDIAN_NOT_FOUND(404, "Guardian not found"),
     GUARDIAN_EXISTS(409, "Guardian exists"),
@@ -21,6 +22,7 @@ public enum ExceptionCode {
     UNAUTHORIZED_GUARDIAN(401, "권한이 없는 회원입니다."),
     CANNOT_CHANGE_ADMIN_STATUS(403, "Admin Status cannot change"),
     NO_UPDATABLE_FIELDS(403, "NO_UPDATABLE_FIELDS");
+
 
 
 
