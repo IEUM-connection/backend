@@ -1,5 +1,8 @@
 package com.springboot.answer.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.springboot.member.entity.Admin;
+import com.springboot.member.entity.Guardian;
 import com.springboot.question.entity.Question;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,27 +29,15 @@ public class Answer {
     @Column(nullable = false)
     private LocalDateTime answerDate = LocalDateTime.now();
 
-    @Enumerated(value = EnumType.STRING)
-    @Column(nullable = false)
-    private AnswerStatus answerStatus = AnswerStatus.ANSWERED;
+    @Column(nullable = false, name = "LAST_MODIFIED_AT")
+    private LocalDateTime modifiedAt = LocalDateTime.now();
 
-    public enum AnswerStatus {
-        ANSWERED("답변 완료"),
-        CLOSED("문의 완료???????"),
-        ;
+    // admin과 연결하기
+    @JsonBackReference
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "ADMIN_ID")
+    private Admin admin;
 
-        @Getter
-        private String answerStatus;
-
-        AnswerStatus(String answerStatus) {
-            this.answerStatus = answerStatus;
-        }
-
-
-
-    }
-
-    // guardian, admin과 연결하기
 
     @OneToOne
     @JoinColumn(name = "question_id")

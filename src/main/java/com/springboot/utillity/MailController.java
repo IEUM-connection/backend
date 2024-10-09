@@ -1,5 +1,7 @@
 package com.springboot.utillity;
 
+import com.springboot.exception.BusinessLogicException;
+import com.springboot.exception.ExceptionCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,6 +38,8 @@ public class MailController {
 
     @GetMapping("/verify-email-code")
     public ResponseEntity<?> mailCheck(@RequestBody Map<String, String> body) {
+        if(!mailService.checkNumber(body.get("email"), body.get("authCode")))
+            throw new BusinessLogicException(ExceptionCode.EMAIL_NOT_AUTH);
         return ResponseEntity.ok(mailService.checkNumber(body.get("email"), body.get("authCode")));
     }
 }

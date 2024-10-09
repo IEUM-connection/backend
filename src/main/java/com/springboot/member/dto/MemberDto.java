@@ -24,6 +24,8 @@ public class MemberDto {
         private String medicalHistory;
         private boolean milkDeliveryRequest;
         private String documentAttachment;
+        private String locationx;
+        private String locationy;
     }
 
     @Getter

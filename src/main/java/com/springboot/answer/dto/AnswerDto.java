@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.persistence.Column;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -46,6 +47,7 @@ public class AnswerDto {
         private long questionId;
         private String responseContent;
         private LocalDateTime answerDate;
-        private Answer.AnswerStatus answerStatus;
+        private LocalDateTime modifiedAt;
+
     }
 }

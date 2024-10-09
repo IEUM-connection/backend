@@ -1,4 +1,4 @@
-package com.springboot.RegistrationNumber.service;
+package com.springboot.registrationNumber.service;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

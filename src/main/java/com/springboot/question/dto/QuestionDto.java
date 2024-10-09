@@ -43,10 +43,13 @@ public class QuestionDto {
     @AllArgsConstructor
     public static class Response {
         private long questionId;
+        private String name;
         private String questionTitle;
         private String questionContent;
         private LocalDateTime questionDate;
+        private LocalDateTime modifiedAt;
         private Question.QuestionStatus questionStatus;
         private String responseContent;
+
     }
 }

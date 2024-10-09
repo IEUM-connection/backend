@@ -16,6 +16,7 @@ public interface QuestionMapper {
     Question questionPatchDtoToQuestion(QuestionDto.Patch requestBody);
 
     @Mapping(source = "answer.responseContent", target = "responseContent")
+    @Mapping(source = "guardian.name", target = "name")
     QuestionDto.Response questionToQuestionResponseDto(Question question);
 
     List<QuestionDto.Response> questionsToQuestionResponseDtos(List<Question> questions);
