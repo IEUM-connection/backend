@@ -68,7 +68,7 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.GET, "/members/**").hasAnyRole("MEMBER", "GUARDIAN", "ADMIN")  // 회원 정보 조회는 멤버, 보호자, 관리자가 가능
                 .antMatchers(HttpMethod.PATCH, "/members/**").hasAnyRole("GUARDIAN", "ADMIN")  // 회원 정보 수정은 보호자와 관리자가 가능
                 .antMatchers(HttpMethod.POST, "/auth/logout").hasAnyRole("GUARDIAN", "ADMIN")  // 로그아웃 요청은 보호자와 관리자가 가능
-                .anyRequest().authenticated()  // 나머지 모든 요청은 인증이 필요
+                .anyRequest().permitAll()   // 나머지 모든 요청은 인증이 필요
                 .and()
                 .sessionManagement()  // 세션 관리 설정
                 .sessionFixation().newSession()  // 세션 고정 보호 활성화, 새로운 세션 생성
