@@ -1,9 +1,12 @@
 package com.springboot.guardian.controller;
 
+import com.springboot.dto.SingleResponseDto;
 import com.springboot.member.dto.GuardianDto;
+import com.springboot.member.dto.MemberDto;
 import com.springboot.member.entity.Guardian;
 import com.springboot.member.mapper.GuardianMapper;
 import com.springboot.member.service.GuardianService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,6 +46,17 @@ public class GuardianController {
     }
 
 
+    @GetMapping("/check-email")
+    public ResponseEntity checkEmailDuplicate(@RequestBody GuardianDto.EmailCheckDto requestBody){
+        //매퍼로 매핑 requestBody -> member.nickName으로 바꿔줘야함
+        //EmailCheckDtoToNickName
+        boolean isDuplicate = guardianService.isEmailDuplicate(requestBody.getEmail());
+
+        GuardianDto.Check responseDto = new  GuardianDto.Check(isDuplicate);
+
+        return new ResponseEntity<>(
+                new SingleResponseDto<>(responseDto), HttpStatus.OK);
+    }
 
 
 

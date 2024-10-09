@@ -112,6 +112,11 @@ public class GuardianService {
         Optional<Guardian> guardian = guardianRepository.findByEmail(email);
         if (guardian.isPresent()) throw new BusinessLogicException(ExceptionCode.GUARDIAN_EXISTS);
     }
+
+        public boolean isEmailDuplicate(String email) {
+            return !guardianRepository.existsByEmail(email);
+        }
+
 }
 
 
