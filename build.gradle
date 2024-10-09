@@ -66,6 +66,9 @@ dependencies {
 
     // decoding
     implementation 'org.json:json:20210307'
+
+    //firebase
+    implementation 'com.google.firebase:firebase-admin:9.2.0'
 }
 
 tasks.named('javadoc') {

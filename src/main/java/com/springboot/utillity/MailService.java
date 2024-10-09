@@ -1,5 +1,7 @@
 package com.springboot.utillity;
 
+import com.springboot.exception.BusinessLogicException;
+import com.springboot.exception.ExceptionCode;
 import org.apache.commons.codec.CharEncoding;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,7 +19,8 @@ import java.time.Duration;
 public class MailService {
 
     private final JavaMailSender javaMailSender;
-    @Value("${spring.mail.username}")
+  
+    @Value("${registration.mail.username}")
     private String senderEmail;
     private int number;
     private long authCodeExpirationMillis = 300000;
@@ -54,7 +57,7 @@ public class MailService {
                 String emailBody =
                         // "<div style='font-family: Arial, sans-serif; background-color: #FCBAAA; padding: 60px; text-align: center;'>" +
                         "<div style='background-color: #ffffff; border-radius: 3px; padding: 60px; max-width: 800px; margin: auto; text-align: center;'>"
-                        + "<img src='https://i.imgur.com/5QLLsBJ.png' alt='Logo' style='width: 300px; height: auto; margin-bottom: 30px;' />"
+                        + "<img src='https://i.imgur.com/z2kc8tT.png' alt='Logo' style='width: 500px; height: auto; margin-bottom: 30px;' />"
                         + "<h1 style='color: #2c2f33; margin-bottom: 40px;'>이메일 인증</h1>"
                         + "<p style='color: #555; font-size: 13px;'>인증번호입니다</p>"
                         + "<h2 style='color: #3BAA4D; font-size: 24px;'>" + number + "</h2>"
@@ -69,6 +72,7 @@ public class MailService {
                 message.saveChanges();
             } catch (MessagingException e) {
                 e.printStackTrace();
+                throw new BusinessLogicException(ExceptionCode.EMAIL_NOT_AUTH);
             }
         }else {
             System.out.println("message is null");

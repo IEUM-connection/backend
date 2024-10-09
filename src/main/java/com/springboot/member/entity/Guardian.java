@@ -1,5 +1,7 @@
 package com.springboot.member.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.springboot.question.entity.Question;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -7,6 +9,8 @@ import lombok.Setter;
 
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Getter
@@ -68,6 +72,12 @@ public class Guardian {
             this.status = status;
         }
     }
+
+
+    // Question과 연결
+    @JsonManagedReference
+    @OneToMany(mappedBy = "guardian")
+    private List<Question> questions = new ArrayList<>();
 
 
 }

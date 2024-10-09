@@ -1,8 +1,8 @@
-package com.springboot.RegistrationNumber.controller;
+package com.springboot.registrationNumber.controller;
 
 // 필요한 클래스 임포트
-import com.springboot.RegistrationNumber.service.RegistrationNumberService;
-import com.springboot.RegistrationNumber.service.CodefRegistrationNumberService;
+import com.springboot.registrationNumber.service.RegistrationNumberService;
+import com.springboot.registrationNumber.service.CodefRegistrationNumberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

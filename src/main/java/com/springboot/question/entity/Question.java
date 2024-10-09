@@ -1,6 +1,8 @@
 package com.springboot.question.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.springboot.answer.entity.Answer;
+import com.springboot.member.entity.Guardian;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,10 +35,12 @@ public class Question {
     @Column(nullable = false)
     private QuestionStatus questionStatus = QuestionStatus.PENDING;
 
+    @Column(nullable = false, name = "LAST_MODIFIED_AT")
+    LocalDateTime modifiedAt = LocalDateTime.now();
+
     public enum QuestionStatus {
         PENDING("답변 대기중"),
-        ANSWERED("답변 완료"),
-        CLOSED("문의 완료???????");
+        ANSWERED("답변 완료");
 
         @Getter
         private String questionStatus;
@@ -47,6 +51,11 @@ public class Question {
     }
 
     // guardian과 연결하기
+    @JsonBackReference
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "GUARDIAN_ID")
+    private Guardian guardian;
+
 
     @OneToOne(mappedBy = "question", orphanRemoval = true)
     private Answer answer;
