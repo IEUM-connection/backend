@@ -19,7 +19,7 @@ import java.time.Duration;
 public class MailService {
 
     private final JavaMailSender javaMailSender;
-    @Value("${registration.spring.mail.username}")
+    @Value("${registration.mail.username}")
     private String senderEmail;
     private int number;
     private long authCodeExpirationMillis = 300000;
