@@ -1,15 +1,22 @@
 package com.springboot.member.controller;
 
+import com.springboot.dto.MultiResponseDto;
 import com.springboot.member.dto.MemberDto;
 import com.springboot.member.entity.Member;
 import com.springboot.member.mapper.MemberMapper;
 import com.springboot.member.service.MemberService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.constraints.Positive;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
@@ -66,18 +73,22 @@ public class MemberController {
         return ResponseEntity.status(201).body(responseDto);
     }
 
-//    @GetMapping("/search")
-//    public ResponseEntity<List<MemberDto.Response>> searchMembers(
-//            @RequestParam String query,
-//            @RequestParam int age,
-//            @RequestParam String medicalHistory) {
-//
-//        List<Member> members = memberService.searchMembers(query, age, medicalHistory);
-//        List<MemberDto.Response> responseDtos = members.stream()
-//                .map(memberMapper::memberToResponseDto)
-//                .collect(Collectors.toList());
-//        return ResponseEntity.ok(responseDtos);
-//    }
+    @GetMapping
+    public ResponseEntity getAllMembers(
+            @Positive @RequestParam int page,
+            @Positive @RequestParam int size) {
+
+        // MemberService에서 멤버 목록 조회
+        Page<Member> pageMembers = memberService.findAllMembers(page - 1, size);
+
+        // Member 엔티티를 DTO로 변환
+        List<MemberDto.Response> responseDtos = pageMembers.getContent().stream()
+                .map(memberMapper::memberToResponseDto)
+                .collect(Collectors.toList());
+
+        // MultiResponseDto로 감싸서 응답
+        return new ResponseEntity<>(new MultiResponseDto<>(responseDtos, pageMembers), HttpStatus.OK);
+    }
 //
 //    @GetMapping("/{status}")
 //    public ResponseEntity<List<MemberDto.Response>> getMembersByStatus(
