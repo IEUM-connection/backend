@@ -53,6 +53,7 @@ public class SecurityConfig {
                 .csrf().disable() // CSRF 비활성화
                 .cors(Customizer.withDefaults()) // CORS 설정
                 .authorizeRequests(authorize -> authorize
+<<<<<<< HEAD
 //                        .antMatchers("/h2/**").permitAll() // H2 Console 접근 허용
 //                        .antMatchers(HttpMethod.POST, "/members", "/guardians", "/auth/login", "/api/identity/**", "/email-code", "/verify-email-code/**", "/find-password/**", "/find-email").permitAll() // 회원가입 및 인증 관련 엔드포인트 허용
 //                        .antMatchers("/admin/**").hasRole("ADMIN") // 관리자 페이지
@@ -62,6 +63,18 @@ public class SecurityConfig {
 //                        .antMatchers(HttpMethod.POST, "/questions", "/answers").hasAnyRole("GUARDIAN", "ADMIN") // 문의사항 처리
 //                        .antMatchers(HttpMethod.GET, "/questions/**").permitAll() // 모든 문의사항 조회 허용
 //                        .antMatchers(HttpMethod.POST, "/auth/logout").hasAnyRole("MEMBER", "GUARDIAN", "ADMIN") // 로그아웃 요청
+=======
+                        .antMatchers("/h2/**").permitAll() // H2 Console 접근 허용
+                        .antMatchers(HttpMethod.POST, "/members", "/guardians", "/auth/login", "/api/identity/**", "/email-code", "/verify-email-code/**", "/find-password/**", "/find-email").permitAll() // 회원가입 및 인증 관련 엔드포인트 허용
+                        .antMatchers("/admin/**").hasRole("ADMIN") // 관리자 페이지
+                        .antMatchers("/guardians/**").hasAnyRole("GUARDIAN", "ADMIN") // 보호자와 관리자만 접근 가능
+                        .antMatchers(HttpMethod.PATCH, "/members/*/adminNote").hasRole("ADMIN")
+                        .antMatchers(HttpMethod.GET, "/members/**").hasAnyRole("MEMBER", "GUARDIAN", "ADMIN") // 회원 정보 조회 권한
+                        .antMatchers(HttpMethod.PATCH, "/members/**").hasAnyRole("MEMBER", "GUARDIAN", "ADMIN") // 회원 정보 수정 권한
+                        .antMatchers(HttpMethod.POST, "/questions", "/answers").hasAnyRole("GUARDIAN", "ADMIN") // 문의사항 처리
+                        .antMatchers(HttpMethod.GET, "/questions/**").permitAll() // 모든 문의사항 조회 허용
+                        .antMatchers(HttpMethod.POST, "/auth/logout").hasAnyRole("MEMBER", "GUARDIAN", "ADMIN") // 로그아웃 요청
+>>>>>>> 4da5887f69cd141946dbab2fc6fb7df5a526e760
                         .anyRequest().permitAll()) // 그 외 모든 요청은 인증 필요
                 .sessionManagement()
                 .sessionFixation().newSession() // 세션 고정 공격 방지
