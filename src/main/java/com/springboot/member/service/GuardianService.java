@@ -37,7 +37,7 @@ public class GuardianService {
         verifyExistsEmail(guardian.getEmail());
         String encryptedPassword = passwordEncoder.encode(guardian.getPassword());
         guardian.setPassword(encryptedPassword);
-        guardian.setRole("ROLE_GUARDIAN"); // 고정된 역할로 설정
+        guardian.setRole("GUARDIAN"); // 고정된 역할로 설정
         Guardian savedGuardian = guardianRepository.save(guardian);
 
         //publisher.publishEvent(new GuardianRegistrationApplicationEvent(this, savedGuardian));
