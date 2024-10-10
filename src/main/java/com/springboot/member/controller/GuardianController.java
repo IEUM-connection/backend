@@ -1,4 +1,4 @@
-package com.springboot.guardian.controller;
+package com.springboot.member.controller;
 
 import com.springboot.dto.SingleResponseDto;
 import com.springboot.member.dto.GuardianDto;
@@ -9,6 +9,8 @@ import com.springboot.member.service.GuardianService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/guardians")
@@ -46,18 +48,25 @@ public class GuardianController {
     }
 
 
+//    @GetMapping("/check-email")
+//    public ResponseEntity checkEmailDuplicate(@RequestBody GuardianDto.EmailCheckDto requestBody){
+//
+//        boolean isDuplicate = guardianService.isEmailDuplicate(requestBody.getEmail());
+//
+////        GuardianDto.Check responseDto = new  GuardianDto.Check(isDuplicate);
+//
+//        return new ResponseEntity<>(
+//                new SingleResponseDto<>(isDuplicate), HttpStatus.OK);
+//    }
+
     @GetMapping("/check-email")
-    public ResponseEntity checkEmailDuplicate(@RequestBody GuardianDto.EmailCheckDto requestBody){
-
+    public ResponseEntity checkEmailDuplicate(@Valid @RequestBody  GuardianDto.EmailCheckDto requestBody) {
         boolean isDuplicate = guardianService.isEmailDuplicate(requestBody.getEmail());
-
-        GuardianDto.Check responseDto = new  GuardianDto.Check(isDuplicate);
-
-        return new ResponseEntity<>(
-                new SingleResponseDto<>(responseDto), HttpStatus.OK);
+        if (!isDuplicate) {
+            return ResponseEntity.badRequest().body("Email is already in use");
+        }
+        return ResponseEntity.ok("Email is available");
     }
-
-
 
 
 

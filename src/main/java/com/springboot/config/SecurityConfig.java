@@ -62,7 +62,8 @@ public class SecurityConfig {
                 .csrf().disable()  // CSRF 보호 비활성화
                 .cors(Customizer.withDefaults())
                 .authorizeRequests()  // URL별 요청 권한을 설정
-                .antMatchers("/h2/**").permitAll()  // H2 콘솔에 대한 요청을 모두 허용
+                .antMatchers("/h2/**").permitAll()// H2 콘솔에 대한 요청을 모두 허용
+                .antMatchers("/guardians/check-email").permitAll()
                 .antMatchers(HttpMethod.POST, "/members").permitAll()  // 회원가입 요청 허용
                 .antMatchers(HttpMethod.POST, "/guardians").permitAll()  // 보호자 가입 요청 허용
                 .antMatchers("/auth/login").permitAll()  // 로그인 관련 요청 허용
