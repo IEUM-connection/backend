@@ -48,8 +48,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .headers().frameOptions().sameOrigin() // H2 Console 사용 시 필요
-                .and()
+          .headers().frameOptions().sameOrigin() // H2 Console 사용 시 필요
+               .and()
                 .csrf().disable() // CSRF 비활성화
                 .cors(Customizer.withDefaults()) // CORS 설정
                 .authorizeRequests(authorize -> authorize
