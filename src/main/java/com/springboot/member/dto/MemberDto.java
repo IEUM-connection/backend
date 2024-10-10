@@ -24,8 +24,8 @@ public class MemberDto {
         private String medicalHistory;
         private boolean milkDeliveryRequest;
         private String documentAttachment;
-        private String locationx;
-        private String locationy;
+        private String x;
+        private String y;
     }
 
     @Getter
@@ -40,6 +40,8 @@ public class MemberDto {
         private String notes;
         private Member.MemberStatus memberStatus;
         private String medicalHistory;
+        private String x;
+        private String y;
     }
 
     @Getter
@@ -55,5 +57,7 @@ public class MemberDto {
         private String relationship;
         private String medicalHistory;
         private String status;
+        private String x;
+        private String y;
     }
 }

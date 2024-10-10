@@ -93,6 +93,12 @@ public class Member {
     @Column(nullable = false)
     private LocalDate birthDate;
 
+    @Column(nullable = true)
+    private String x;
+
+    @Column(nullable = true)
+    private String y;
+
 //    public Collection<? extends GrantedAuthority> getAuthorities() {
 //        return java.util.List.of();
 //    }
