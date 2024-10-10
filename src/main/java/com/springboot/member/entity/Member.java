@@ -95,6 +95,7 @@ public class Member {
     @Column(nullable = false)
     private LocalDate birthDate;  // 생년월일
 
+
     public enum MemberStatus {
         ACTIVE,  // 활성 상태
         AWAITING_APPROVAL,  // 승인 대기 상태
