@@ -1,15 +1,16 @@
 package com.springboot.member.service;
 
+import com.springboot.exception.BusinessLogicException;
+import com.springboot.exception.ExceptionCode;
 import com.springboot.member.entity.Member;
-
 import com.springboot.member.repository.MemberRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class MemberService {
@@ -20,76 +21,85 @@ public class MemberService {
         this.memberRepository = memberRepository;
     }
 
-
     public Member createMember(Member member) {
+        if (memberRepository.existsById(member.getMemberId())) {
+            throw new BusinessLogicException(ExceptionCode.MEMBER_ALREADY_EXISTS);
+        }
+        member.setMemberStatus(Member.MemberStatus.AWAITING_APPROVAL);
         return memberRepository.save(member);
     }
-
 
     public Member updateMember(Long memberId, Member updatedMember) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
-
+        Member member = getMember(memberId);
         Optional.ofNullable(updatedMember.getName()).ifPresent(member::setName);
         Optional.ofNullable(updatedMember.getTel()).ifPresent(member::setTel);
+        Optional.ofNullable(updatedMember.getPhone()).ifPresent(member::setPhone);
         Optional.ofNullable(updatedMember.getAddress()).ifPresent(member::setAddress);
+        Optional.ofNullable(updatedMember.getMedicalHistory()).ifPresent(member::setMedicalHistory);
         Optional.ofNullable(updatedMember.getDetailedAddress()).ifPresent(member::setDetailedAddress);
+        Optional.ofNullable(updatedMember.getLatitude()).ifPresent(member::setLatitude);
+        Optional.ofNullable(updatedMember.getLongitude()).ifPresent(member::setLongitude);
         Optional.ofNullable(updatedMember.getPostalCode()).ifPresent(member::setPostalCode);
-
+        Optional.ofNullable(updatedMember.getEmergencyContact()).ifPresent(member::setEmergencyContact);
+        Optional.ofNullable(updatedMember.getDocumentAttachment()).ifPresent(member::setDocumentAttachment);
+        Optional.ofNullable(updatedMember.getResidentNumber()).ifPresent(member::setResidentNumber);
         return memberRepository.save(member);
     }
 
-
     public Member quitMember(Long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
-
-        member.setMemberStatus(Member.MemberStatus.MEMBER_QUIT); // 상태 변경
-        return memberRepository.save(member);  // 상태만 업데이트
+        Member member = getMember(memberId);
+        member.setMemberStatus(Member.MemberStatus.MEMBER_QUIT);
+        return memberRepository.save(member);
     }
 
     public Member getMember(Long memberId) {
         return memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
     }
 
-
     public Member addNotes(Long memberId, String notes) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
-
-        member.setNotes(notes); // 관리자 코멘트 필드 추가
+        Member member = getMember(memberId);
+        member.setNotes(notes);
         return memberRepository.save(member);
     }
 
     public Member addAdminNote(Long memberId, String notes) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
-
-        member.setAdminNote(notes); // 관리자 코멘트 필드 추가
+        Member member = getMember(memberId);
+        member.setAdminNote(notes);
         return memberRepository.save(member);
     }
 
-
-    // 멤버 조회 (구청 위치 기반)
     public List<Member> getMembersByLocation(String location) {
-        return memberRepository.findByAddressContaining(location);
+        List<Member> members = memberRepository.findByAddressContaining(location);
+        if (members.isEmpty()) {
+            throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
+        }
+        return members;
     }
 
     public List<Member> searchMembers(String query, int age, String medicalHistory) {
         return memberRepository.findByNameContainingAndAgeAndMedicalHistoryContaining(query, age, medicalHistory);
     }
 
-    //
-    public List<Member> getMembersByStatus(String status) {
-        return memberRepository.findByMemberStatus(status);
+    public List<Member> getMembersByStatus(Member.MemberStatus status) {
+        List<Member> members = memberRepository.findByMemberStatus(status);
+        if (members.isEmpty()) {
+            throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
+        }
+        return members;
     }
 
-
-    // 모든 멤버 목록 조회
     public Page<Member> findAllMembers(int page, int size) {
-        return memberRepository.findAll(
-                PageRequest.of(page, size, Sort.by("memberId").descending())
-        );
+        Page<Member> members = memberRepository.findAll(PageRequest.of(page, size, Sort.by("memberId").descending()));
+        if (members.isEmpty()) {
+            throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
+        }
+        return members;
+    }
+
+    public Member aprroveMember(Long memberId) {
+        Member member = getMember(memberId);
+        member.setMemberStatus(Member.MemberStatus.ACTIVE);
+        return memberRepository.save(member);
     }
 }

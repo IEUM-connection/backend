@@ -35,15 +35,19 @@ public class MemberDto {
     public static class Patch {
         private String name;
         private String tel;
+        private String phone;
         private String address;
         private String detailedAddress;
         private String postalCode;
         private String emergencyContact;
         private String notes;
-        private Member.MemberStatus memberStatus;
+        private String residentNumber;
         private String medicalHistory;
-        private String x;
-        private String y;
+        private String latitude;
+        private String longitude;
+        private boolean milkDeliveryRequest;
+        private String documentAttachment;
+
     }
 
     @Getter
@@ -56,10 +60,15 @@ public class MemberDto {
         private String tel;
         private String phone;
         private int age;
+        private String notes;
         private String relationship;
         private String medicalHistory;
-        private String status;
-        private String x;
-        private String y;
+        private String memberStatus;
+        private String adminNote;
+        private String latitude;
+        private String longitude;
+        private boolean milkDeliveryRequest;
+        private String documentAttachment;
+
     }
 }
