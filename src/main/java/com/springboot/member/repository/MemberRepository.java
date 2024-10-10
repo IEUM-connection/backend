@@ -16,7 +16,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     List<Member> findByNameContainingAndAgeAndMedicalHistoryContaining(String query, int age, String medicalHistory);
 
-    List<Member> findByMemberStatus(String memberStatus);
+    List<Member> findByMemberStatus(Member.MemberStatus status);
 
     Page<Member> findAll(Pageable pageable);
 }

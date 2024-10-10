@@ -1,6 +1,6 @@
 package com.springboot.member.controller;
 
-import com.springboot.dto.MultiResponseDto;
+import com.springboot.dto.*;
 import com.springboot.member.dto.MemberDto;
 import com.springboot.member.entity.Member;
 import com.springboot.member.mapper.MemberMapper;
@@ -16,7 +16,6 @@ import javax.validation.constraints.Positive;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @RestController
 @RequestMapping("/members")
@@ -34,24 +33,23 @@ public class MemberController {
         Member member = memberMapper.memberPostDtoToMember(postDto);
         Member registerMember = memberService.createMember(member);
         MemberDto.Response responseDto = memberMapper.memberToResponseDto(registerMember);
-        return ResponseEntity.ok(responseDto);
+        return ResponseEntity.ok(new SingleResponseDto<>(responseDto));
     }
 
     @GetMapping("/{member-id}")
     public ResponseEntity getMember(@PathVariable("member-id") Long memberId) {
-
         Member member = memberService.getMember(memberId);
         MemberDto.Response responseDto = memberMapper.memberToResponseDto(member);
-        return ResponseEntity.ok(responseDto);
+        return ResponseEntity.ok(new SingleResponseDto<>(responseDto));
     }
+
     @PatchMapping("/{member-id}")
-    public ResponseEntity updateMember(@PathVariable("member-id") Long memberId,
-                                                           @RequestBody MemberDto.Patch patchDto) {
+    public ResponseEntity updateMember(@PathVariable("member-id") Long memberId, @RequestBody MemberDto.Patch patchDto) {
         Member member = memberService.getMember(memberId);
         memberMapper.updateMemberFromPatchDto(patchDto, member);
         member = memberService.updateMember(memberId, member);
         MemberDto.Response responseDto = memberMapper.memberToResponseDto(member);
-        return ResponseEntity.ok(responseDto);
+        return ResponseEntity.ok(new SingleResponseDto<>(responseDto));
     }
 
     @DeleteMapping("/{member-id}")
@@ -60,53 +58,47 @@ public class MemberController {
         return ResponseEntity.noContent().build();
     }
 
-
     @PatchMapping("/{member-id}/notes")
-    //가디언이나 어드민만 고치고 올릴 수 있게
-    public ResponseEntity  addAdminComment(@PathVariable("member-id") Long memberId, @RequestBody String notes) {
+    // 가디언이나 어드민만 수정 가능
+    public ResponseEntity addAdminComment(@PathVariable("member-id") Long memberId, @RequestBody String notes) {
         Member member = memberService.addNotes(memberId, notes);
         MemberDto.Response responseDto = memberMapper.memberToResponseDto(member);
-        return ResponseEntity.status(201).body(responseDto);
+        return ResponseEntity.status(201).body(new SingleResponseDto<>(responseDto));
     }
 
     @PatchMapping("/{member-id}/adminNote")
-    //어드민만 고치고 올릴 수 있게
-    public ResponseEntity  addAdminNote(@PathVariable("member-id") Long memberId, @RequestBody String notes) {
+    // 어드민만 수정 가능
+    public ResponseEntity addAdminNote(@PathVariable("member-id") Long memberId, @RequestBody String notes) {
         Member member = memberService.addAdminNote(memberId, notes);
         MemberDto.Response responseDto = memberMapper.memberToResponseDto(member);
-        return ResponseEntity.status(201).body(responseDto);
+        return ResponseEntity.status(201).body(new SingleResponseDto<>(responseDto));
     }
 
-
     @GetMapping
-    public ResponseEntity getAllMembers(
-            @Positive @RequestParam int page,
-            @Positive @RequestParam int size) {
-
-        // MemberService에서 멤버 목록 조회
+    public ResponseEntity getAllMembers(@Positive @RequestParam int page, @Positive @RequestParam int size) {
         Page<Member> pageMembers = memberService.findAllMembers(page - 1, size);
-
-        // Member 엔티티를 DTO로 변환
         List<MemberDto.Response> responseDtos = pageMembers.getContent().stream()
                 .map(memberMapper::memberToResponseDto)
                 .collect(Collectors.toList());
 
-        // MultiResponseDto로 감싸서 응답
         return new ResponseEntity<>(new MultiResponseDto<>(responseDtos, pageMembers), HttpStatus.OK);
     }
 
-    @GetMapping("/{status}")
-    public ResponseEntity<List<MemberDto.Response>> getMembersByStatus(
-            @PathVariable String status,
-            @RequestParam int page,
-            @RequestParam int size) {
-
+    @GetMapping("/status/{status}")
+    public ResponseEntity getMembersByStatus(@PathVariable Member.MemberStatus status, @RequestParam int page, @RequestParam int size) {
         List<Member> members = memberService.getMembersByStatus(status);
         List<MemberDto.Response> responseDtos = members.stream()
                 .map(memberMapper::memberToResponseDto)
                 .collect(Collectors.toList());
 
-        return ResponseEntity.ok(responseDtos);
+        return ResponseEntity.ok(new SingleResponseDto<>(responseDtos));
     }
 
+    @PatchMapping("/{member-id}/approve")
+    // 어드민만 승인 가능
+    public ResponseEntity approveMember(@PathVariable("member-id") Long memberId) {
+        Member member = memberService.aprroveMember(memberId);
+        MemberDto.Response responseDto = memberMapper.memberToResponseDto(member);
+        return ResponseEntity.ok(new SingleResponseDto<>(responseDto));
+    }
 }
