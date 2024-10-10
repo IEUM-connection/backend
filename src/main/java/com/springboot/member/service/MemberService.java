@@ -3,6 +3,9 @@ package com.springboot.member.service;
 import com.springboot.member.entity.Member;
 
 import com.springboot.member.repository.MemberRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 
@@ -44,6 +47,7 @@ public class MemberService {
         member.setMemberStatus(Member.MemberStatus.MEMBER_QUIT); // 상태 변경
         return memberRepository.save(member);  // 상태만 업데이트
     }
+
     public Member getMember(Long memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
@@ -66,10 +70,17 @@ public class MemberService {
     public List<Member> searchMembers(String query, int age, String medicalHistory) {
         return memberRepository.findByNameContainingAndAgeAndMedicalHistoryContaining(query, age, medicalHistory);
     }
-//
+
+    //
     public List<Member> getMembersByStatus(String status) {
         return memberRepository.findByMemberStatus(status);
     }
 
 
+    // 모든 멤버 목록 조회
+    public Page<Member> findAllMembers(int page, int size) {
+        return memberRepository.findAll(
+                PageRequest.of(page, size, Sort.by("memberId").descending())
+        );
+    }
 }
