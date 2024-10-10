@@ -118,6 +118,7 @@ public class SecurityConfig {
 
             // 필터 적용 순서 설정
             builder.addFilter(jwtAuthenticationFilter)
+
                     .addFilterAfter(jwtVerificationFilter, JwtAuthenticationFilter.class)
                     .addFilterAfter(jwtVerificationFilter, OAuth2LoginAuthenticationFilter.class);
         }
