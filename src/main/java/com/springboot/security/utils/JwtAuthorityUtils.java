@@ -28,7 +28,7 @@ public class JwtAuthorityUtils {
     }
 
     public List<GrantedAuthority> createAuthorities(String role){
-        return List.of(new SimpleGrantedAuthority(role));
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role));
     }
 
 }

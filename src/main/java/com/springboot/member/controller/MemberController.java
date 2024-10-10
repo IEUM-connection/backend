@@ -4,12 +4,14 @@ import com.springboot.member.dto.MemberDto;
 import com.springboot.member.entity.Member;
 import com.springboot.member.mapper.MemberMapper;
 import com.springboot.member.service.MemberService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @RestController
 @RequestMapping("/members")
@@ -23,7 +25,7 @@ public class MemberController {
     }
 
     @PostMapping
-    public ResponseEntity<MemberDto.Response> createMember(@RequestBody MemberDto.Post postDto) {
+    public ResponseEntity createMember(@RequestBody MemberDto.Post postDto) {
         Member member = memberMapper.memberPostDtoToMember(postDto);
         member = memberService.createMember(member);
         MemberDto.Response responseDto = memberMapper.memberToResponseDto(member);
@@ -31,14 +33,16 @@ public class MemberController {
     }
 
     @GetMapping("/{member-id}")
-    public ResponseEntity<MemberDto.Response> getMember(@PathVariable Long memberId) {
+    public ResponseEntity getMember(@PathVariable("member-id") Long memberId) {
+//        if (authentication.getAuthorities().stream().noneMatch(a -> a.getAuthority().equals("ROLE_ADMIN") || a.getAuthority().equals("ROLE_GUARDIAN"))) {
+//            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+//        }
         Member member = memberService.getMember(memberId);
         MemberDto.Response responseDto = memberMapper.memberToResponseDto(member);
         return ResponseEntity.ok(responseDto);
     }
-
     @PatchMapping("/{member-id}")
-    public ResponseEntity<MemberDto.Response> updateMember(@PathVariable Long memberId,
+    public ResponseEntity updateMember(@PathVariable("member-id") Long memberId,
                                                            @RequestBody MemberDto.Patch patchDto) {
         Member member = memberService.getMember(memberId);
         memberMapper.updateMemberFromPatchDto(patchDto, member);
@@ -48,7 +52,7 @@ public class MemberController {
     }
 
     @DeleteMapping("/{member-id}")
-    public ResponseEntity<Void> deleteMember(@PathVariable Long memberId) {
+    public ResponseEntity deleteMember(@PathVariable("member-id") Long memberId) {
         memberService.quitMember(memberId);
         return ResponseEntity.noContent().build();
     }
@@ -56,7 +60,7 @@ public class MemberController {
 
     @PatchMapping("/{member-id}/notes")
     //얘는 가디언이나 어드민만 고치고 올릴 수 있게
-    public ResponseEntity<MemberDto.Response> addAdminComment(@PathVariable Long memberId, @RequestBody String notes) {
+    public ResponseEntity  addAdminComment(@PathVariable("member-id") Long memberId, @RequestBody String notes) {
         Member member = memberService.addAdminComment(memberId, notes);
         MemberDto.Response responseDto = memberMapper.memberToResponseDto(member);
         return ResponseEntity.status(201).body(responseDto);
