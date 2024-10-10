@@ -14,6 +14,8 @@ public class MemberDto {
         private String address;
         private String detailedAddress;
         private String postalCode;
+        private String latitude;
+        private String longitude;
         private String tel;
         private String phone;
         private Long guardianId;
@@ -24,8 +26,6 @@ public class MemberDto {
         private String medicalHistory;
         private boolean milkDeliveryRequest;
         private String documentAttachment;
-        private String locationx;
-        private String locationy;
     }
 
     @Getter

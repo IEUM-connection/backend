@@ -8,8 +8,6 @@ import com.springboot.member.service.MemberService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -34,16 +32,14 @@ public class MemberController {
     @PostMapping
     public ResponseEntity createMember(@RequestBody MemberDto.Post postDto) {
         Member member = memberMapper.memberPostDtoToMember(postDto);
-        member = memberService.createMember(member);
-        MemberDto.Response responseDto = memberMapper.memberToResponseDto(member);
+        Member registerMember = memberService.createMember(member);
+        MemberDto.Response responseDto = memberMapper.memberToResponseDto(registerMember);
         return ResponseEntity.ok(responseDto);
     }
 
     @GetMapping("/{member-id}")
     public ResponseEntity getMember(@PathVariable("member-id") Long memberId) {
-//        if (authentication.getAuthorities().stream().noneMatch(a -> a.getAuthority().equals("ROLE_ADMIN") || a.getAuthority().equals("ROLE_GUARDIAN"))) {
-//            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-//        }
+
         Member member = memberService.getMember(memberId);
         MemberDto.Response responseDto = memberMapper.memberToResponseDto(member);
         return ResponseEntity.ok(responseDto);
@@ -66,12 +62,21 @@ public class MemberController {
 
 
     @PatchMapping("/{member-id}/notes")
-    //얘는 가디언이나 어드민만 고치고 올릴 수 있게
+    //가디언이나 어드민만 고치고 올릴 수 있게
     public ResponseEntity  addAdminComment(@PathVariable("member-id") Long memberId, @RequestBody String notes) {
-        Member member = memberService.addAdminComment(memberId, notes);
+        Member member = memberService.addNotes(memberId, notes);
         MemberDto.Response responseDto = memberMapper.memberToResponseDto(member);
         return ResponseEntity.status(201).body(responseDto);
     }
+
+    @PatchMapping("/{member-id}/adminNote")
+    //어드민만 고치고 올릴 수 있게
+    public ResponseEntity  addAdminNote(@PathVariable("member-id") Long memberId, @RequestBody String notes) {
+        Member member = memberService.addAdminNote(memberId, notes);
+        MemberDto.Response responseDto = memberMapper.memberToResponseDto(member);
+        return ResponseEntity.status(201).body(responseDto);
+    }
+
 
     @GetMapping
     public ResponseEntity getAllMembers(
@@ -89,19 +94,19 @@ public class MemberController {
         // MultiResponseDto로 감싸서 응답
         return new ResponseEntity<>(new MultiResponseDto<>(responseDtos, pageMembers), HttpStatus.OK);
     }
-//
-//    @GetMapping("/{status}")
-//    public ResponseEntity<List<MemberDto.Response>> getMembersByStatus(
-//            @PathVariable String status,
-//            @RequestParam int page,
-//            @RequestParam int size) {
-//
-//        List<Member> members = memberService.getMembersByStatus(status);
-//        List<MemberDto.Response> responseDtos = members.stream()
-//                .map(memberMapper::memberToResponseDto)
-//                .collect(Collectors.toList());
-//
-//        return ResponseEntity.ok(responseDtos);
-//    }
+
+    @GetMapping("/{status}")
+    public ResponseEntity<List<MemberDto.Response>> getMembersByStatus(
+            @PathVariable String status,
+            @RequestParam int page,
+            @RequestParam int size) {
+
+        List<Member> members = memberService.getMembersByStatus(status);
+        List<MemberDto.Response> responseDtos = members.stream()
+                .map(memberMapper::memberToResponseDto)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(responseDtos);
+    }
 
 }

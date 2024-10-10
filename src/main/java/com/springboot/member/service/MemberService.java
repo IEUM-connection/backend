@@ -54,13 +54,22 @@ public class MemberService {
     }
 
 
-    public Member addAdminComment(Long memberId, String notes) {
+    public Member addNotes(Long memberId, String notes) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
+
+        member.setNotes(notes); // 관리자 코멘트 필드 추가
+        return memberRepository.save(member);
+    }
+
+    public Member addAdminNote(Long memberId, String notes) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
 
         member.setAdminNote(notes); // 관리자 코멘트 필드 추가
         return memberRepository.save(member);
     }
+
 
     // 멤버 조회 (구청 위치 기반)
     public List<Member> getMembersByLocation(String location) {
