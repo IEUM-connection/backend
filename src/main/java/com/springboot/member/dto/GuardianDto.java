@@ -3,6 +3,7 @@ package com.springboot.member.dto;
 import com.springboot.member.entity.Guardian;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.Column;
@@ -71,6 +72,7 @@ public class GuardianDto {
     @Getter
     @Setter
     @AllArgsConstructor
+    @NoArgsConstructor
     public static class EmailCheckDto {
         @Email
         private String email;
