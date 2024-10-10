@@ -66,16 +66,23 @@ public class GuardianController {
     }
 
 
-//    @GetMapping("/check-email")
-//    public ResponseEntity checkEmailDuplicate(@RequestBody GuardianDto.EmailCheckDto requestBody){
-//
-//        boolean isDuplicate = guardianService.isEmailDuplicate(requestBody.getEmail());
-//
-////        GuardianDto.Check responseDto = new  GuardianDto.Check(isDuplicate);
-//
-//        return new ResponseEntity<>(
-//                new SingleResponseDto<>(isDuplicate), HttpStatus.OK);
-//    }
+    @GetMapping("/guardian-id")
+    public ResponseEntity getGuardian(@PathVariable("guardian-id") Long guardianId) {
+        try {
+            // GuardianService에서 특정 Guardian을 조회
+            Guardian guardian = guardianService.getGuardian(guardianId);
+
+            // Guardian 엔티티를 Response DTO로 변환
+            GuardianDto.Response responseDto = guardianMapper.guardianToResponseDto(guardian);
+
+            // 성공 시 반환
+            return ResponseEntity.ok(responseDto);
+        } catch (Exception e) {
+            // Guardian을 찾을 수 없거나 오류 발생 시 예외 처리
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("서버 오류가 발생했습니다.");
+        }
+    }
+
 
     @GetMapping("/check-email")
     public ResponseEntity<String> checkEmailDuplicate(@RequestParam String email) {
