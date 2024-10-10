@@ -57,6 +57,7 @@ public class SecurityConfig {
                         .antMatchers(HttpMethod.POST, "/members", "/guardians", "/auth/login", "/api/identity/**", "/email-code", "/verify-email-code/**", "/find-password/**", "/find-email").permitAll() // 회원가입 및 인증 관련 엔드포인트 허용
                         .antMatchers("/admin/**").hasRole("ADMIN") // 관리자 페이지
                         .antMatchers("/guardians/**").hasAnyRole("GUARDIAN", "ADMIN") // 보호자와 관리자만 접근 가능
+                        .antMatchers(HttpMethod.PATCH, "/members/*/adminNote").hasRole("ADMIN")
                         .antMatchers(HttpMethod.GET, "/members/**").hasAnyRole("MEMBER", "GUARDIAN", "ADMIN") // 회원 정보 조회 권한
                         .antMatchers(HttpMethod.PATCH, "/members/**").hasAnyRole("MEMBER", "GUARDIAN", "ADMIN") // 회원 정보 수정 권한
                         .antMatchers(HttpMethod.POST, "/questions", "/answers").hasAnyRole("GUARDIAN", "ADMIN") // 문의사항 처리
