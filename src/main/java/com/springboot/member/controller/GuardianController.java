@@ -60,8 +60,8 @@ public class GuardianController {
 //    }
 
     @GetMapping("/check-email")
-    public ResponseEntity checkEmailDuplicate(@Valid @RequestBody  GuardianDto.EmailCheckDto requestBody) {
-        boolean isDuplicate = guardianService.isEmailDuplicate(requestBody.getEmail());
+    public ResponseEntity<String> checkEmailDuplicate(@RequestParam String email) {
+        boolean isDuplicate = guardianService.isEmailDuplicate(email);
         if (!isDuplicate) {
             return ResponseEntity.ok("Email is already in use");
         }
