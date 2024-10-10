@@ -185,3 +185,6 @@ server/src/*/*.iml
 
 mysql_data
 src/main/generated/
+
+#
+src/main/resources/firebase-service-account.json
