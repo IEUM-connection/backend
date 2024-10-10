@@ -26,11 +26,8 @@ public class MemberDto {
         private String medicalHistory;
         private boolean milkDeliveryRequest;
         private String documentAttachment;
-<<<<<<< HEAD
         private String x;
         private String y;
-=======
->>>>>>> 4da5887f69cd141946dbab2fc6fb7df5a526e760
     }
 
     @Getter
