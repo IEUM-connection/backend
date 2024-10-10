@@ -22,7 +22,7 @@ import java.util.List;
 public class Guardian {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long guardianId;
 
     @Column(unique = true, nullable = false)
