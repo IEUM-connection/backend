@@ -24,7 +24,7 @@ public class GuardianController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createGuardian(@RequestBody GuardianDto.Post postDto) {
+    public ResponseEntity createGuardian(@RequestBody GuardianDto.Post postDto) {
         try {
             // 데이터 확인을 위한 로그
             System.out.println("postDto: " + postDto);
@@ -66,9 +66,9 @@ public class GuardianController {
     }
 
 
-    @GetMapping("/guardian-id")
+    @GetMapping("/{guardian-id}")
     public ResponseEntity getGuardian(@PathVariable("guardian-id") Long guardianId) {
-        try {
+
             // GuardianService에서 특정 Guardian을 조회
             Guardian guardian = guardianService.getGuardian(guardianId);
 
@@ -77,10 +77,7 @@ public class GuardianController {
 
             // 성공 시 반환
             return ResponseEntity.ok(responseDto);
-        } catch (Exception e) {
-            // Guardian을 찾을 수 없거나 오류 발생 시 예외 처리
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("서버 오류가 발생했습니다.");
-        }
+
     }
 
 
