@@ -1,13 +1,16 @@
 package com.springboot.member.controller;
 
 import com.springboot.dto.*;
+import com.springboot.member.dto.AdminDto;
 import com.springboot.member.dto.MemberDto;
+import com.springboot.member.entity.Admin;
 import com.springboot.member.entity.Member;
 import com.springboot.member.mapper.MemberMapper;
 import com.springboot.member.service.MemberService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -40,6 +43,14 @@ public class MemberController {
     @GetMapping("/{member-id}")
     public ResponseEntity getMember(@PathVariable("member-id") Long memberId) {
         Member member = memberService.getMember(memberId);
+        MemberDto.Response responseDto = memberMapper.memberToResponseDto(member);
+        return ResponseEntity.ok(new SingleResponseDto<>(responseDto));
+    }
+
+    @GetMapping("/member")
+    public ResponseEntity getMember(Authentication authentication) {
+        String memberCode = authentication.getName();
+        Member member = memberService.findMember(memberCode);
         MemberDto.Response responseDto = memberMapper.memberToResponseDto(member);
         return ResponseEntity.ok(new SingleResponseDto<>(responseDto));
     }

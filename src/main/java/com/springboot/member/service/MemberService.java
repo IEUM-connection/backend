@@ -102,4 +102,10 @@ public class MemberService {
         member.setMemberStatus(Member.MemberStatus.ACTIVE);
         return memberRepository.save(member);
     }
+
+    public Member findMember(String memberCode) {
+        Optional<Member> member = memberRepository.findByMemberCode(memberCode);
+
+        return null;
+    }
 }
