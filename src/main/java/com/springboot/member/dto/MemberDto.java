@@ -28,6 +28,7 @@ public class MemberDto {
         private String medicalHistory;
         private boolean milkDeliveryRequest;
         private String documentAttachment;
+   
     }
 
     @Getter
@@ -70,6 +71,7 @@ public class MemberDto {
         private boolean milkDeliveryRequest;
         private String documentAttachment;
         private LocalDateTime createdAt;
+
 
     }
 }
