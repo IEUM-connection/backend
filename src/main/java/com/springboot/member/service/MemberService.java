@@ -102,6 +102,12 @@ public class MemberService {
         member.setMemberStatus(Member.MemberStatus.ACTIVE);
         return memberRepository.save(member);
     }
+
+    public Member findMember(String memberCode) {
+        Optional<Member> member = memberRepository.findByMemberCode(memberCode);
+
+        return null;
+    }
     // FCM 토큰 코드 추가
     // FCM 토큰 업데이트를 위한 새로운 메소드
     public Member updateFcmToken(Long memberId, String fcmToken) {
