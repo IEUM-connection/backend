@@ -55,6 +55,7 @@ public class MemberController {
         return ResponseEntity.ok(new SingleResponseDto<>(responseDto));
     }
 
+
     @PatchMapping("/{member-id}")
     public ResponseEntity updateMember(@PathVariable("member-id") Long memberId, @RequestBody MemberDto.Patch patchDto) {
         Member member = memberService.getMember(memberId);
