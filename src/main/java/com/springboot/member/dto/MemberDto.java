@@ -4,6 +4,8 @@ import com.springboot.member.entity.Member;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 public class MemberDto {
@@ -45,6 +47,7 @@ public class MemberDto {
         private String longitude;
         private boolean milkDeliveryRequest;
         private String documentAttachment;
+
     }
 
     @Getter
@@ -66,5 +69,7 @@ public class MemberDto {
         private String longitude;
         private boolean milkDeliveryRequest;
         private String documentAttachment;
+        private LocalDateTime createdAt;
+
     }
 }

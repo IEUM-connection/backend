@@ -9,6 +9,7 @@ import lombok.Setter;
 
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,6 +47,9 @@ public class Guardian {
 
     @Column(nullable = false)
     private String role;
+
+    @Column(nullable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
 //
 //    public Collection<? extends GrantedAuthority> getAuthorities() {
 //        return List.of();
