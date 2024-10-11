@@ -54,9 +54,9 @@ public class GuardianController {
         return ResponseEntity.ok(new SingleResponseDto<>(responseDto));
     }
 
-    @PostMapping("/check-email")
-    public ResponseEntity  checkEmailDuplicate( @Valid @RequestBody GuardianDto.EmailCheckDto requestBody ) {
-        String email = requestBody.getEmail();
+    @GetMapping("/email")
+    public ResponseEntity  checkEmailDuplicate( @Valid @RequestParam String email ) {
+
         boolean isAvailable = guardianService.isEmailDuplicate(email);
         if (isAvailable) {
             return ResponseEntity.ok("Email is available");
