@@ -104,8 +104,8 @@ public class MemberService {
     }
 
     public Member findMember(String memberCode) {
-        Optional<Member> member = memberRepository.findByMemberCode(memberCode);
+        return memberRepository.findByMemberCode(memberCode)
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
 
-        return null;
     }
 }
