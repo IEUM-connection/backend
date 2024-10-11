@@ -59,15 +59,11 @@ public class GuardianDto {
     @Getter
     @AllArgsConstructor
     public static class PatchPassword {
-        private long guardianId;
 
         private String password;
 
         private String newPassword;
 
-        public void setMemberId(long memberId) {
-            this.guardianId = guardianId;
-        }
 
     }
 

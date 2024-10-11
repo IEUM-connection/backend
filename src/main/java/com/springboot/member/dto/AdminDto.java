@@ -22,12 +22,15 @@ public class AdminDto {
         private Admin.AdminStatus adminStatus; // 관리자 상태 (활성, 휴면, 탈퇴)
     }
 
+
     @Getter
-    @Setter
     @AllArgsConstructor
-    @NoArgsConstructor
-    public static class UpdatePassword {
-        private long adminId;          // 관리자 ID
-        private String password;       // 새 비밀번호
+    public static class PatchPassword {
+
+        private String password;
+
+        private String newPassword;
+
+
     }
 }
