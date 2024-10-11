@@ -3,11 +3,13 @@ package com.springboot.member.service;
 import com.springboot.exception.BusinessLogicException;
 import com.springboot.exception.ExceptionCode;
 import com.springboot.member.entity.Admin;
+import com.springboot.member.entity.Guardian;
 import com.springboot.member.repository.AdminRepository;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
@@ -22,11 +24,13 @@ public class AdminService {
 
     private final AdminRepository adminRepository;
     private final ApplicationEventPublisher publisher;
+    private final PasswordEncoder passwordEncoder;
 
     
-    public AdminService(AdminRepository adminRepository, ApplicationEventPublisher publisher) {
+    public AdminService(AdminRepository adminRepository, ApplicationEventPublisher publisher, PasswordEncoder passwordEncoder) {
         this.adminRepository = adminRepository;
         this.publisher = publisher;
+        this.passwordEncoder = passwordEncoder;
     }
 
 
@@ -38,12 +42,12 @@ public class AdminService {
     }
 
     public Admin updateAdminPassword(Admin admin) {
-        // TODO should business logic
-        //throw new BusinessLogicException(ExceptionCode.NOT_IMPLEMENTATION);
         Admin findAdmin = findVerifiedAdmin(admin.getAdminCode());
 
+        // 새 비밀번호를 암호화한 후 저장
         Optional.ofNullable(admin.getPassword())
-                .ifPresent(password -> findAdmin.setPassword(password));
+                .ifPresent(password -> findAdmin.setPassword(passwordEncoder.encode(password)));
+
         return adminRepository.save(findAdmin);
     }
 
@@ -108,4 +112,22 @@ public class AdminService {
     }
 
 
+    public void verifyPassword(String adminCode, String password) {
+        Admin admin = findVerifiedAdmin(adminCode);
+
+        if (!passwordEncoder.matches(password, admin.getPassword())) {
+
+            throw new BusinessLogicException(ExceptionCode.CONFIRM_PASSWORD_MISMATCH);
+        }
+    }
+
+    public Admin updatePassword(Admin admin) {
+
+        if (admin.getPassword() == null || admin.getPassword().isEmpty()) {
+            throw new BusinessLogicException(ExceptionCode.PASSWORD_WRONG);
+        }
+
+        admin.setPassword(passwordEncoder.encode(admin.getPassword()));
+        return adminRepository.save(admin);
+    }
 }

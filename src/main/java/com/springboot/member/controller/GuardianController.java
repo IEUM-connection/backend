@@ -47,9 +47,10 @@ public class GuardianController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/{guardian-id}")
-    public ResponseEntity getGuardian(@PathVariable("guardian-id") Long guardianId) {
-        Guardian guardian = guardianService.getGuardian(guardianId);
+    @GetMapping
+    public ResponseEntity getGuardian(Authentication authentication) {
+        String email = authentication.getName();
+        Guardian guardian = guardianService.findVerifiedGuardian(email);
         GuardianDto.Response responseDto = mapper.guardianToResponseDto(guardian);
         return ResponseEntity.ok(new SingleResponseDto<>(responseDto));
     }
@@ -71,10 +72,8 @@ public class GuardianController {
             Authentication authentication) {
         String email = authentication.getName();
         Guardian guardian = guardianService.findVerifiedGuardian(email);
-        guardianService.verifyPassword(guardian.getGuardianId(), requestBody.getPassword());
-        guardian.setPassword(requestBody.getNewPassword());
-        Guardian updatedguardian = guardianService.updatePassword(guardian);
-
-        return new ResponseEntity<>(new SingleResponseDto<>(mapper.guardianToGuardianResponseDto(updatedguardian)), HttpStatus.OK);
+        guardianService.verifyPassword(email, requestBody.getPassword());
+        guardianService.updatePassword(guardian);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

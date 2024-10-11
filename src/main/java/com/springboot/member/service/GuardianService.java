@@ -123,8 +123,8 @@ public class GuardianService {
             return !guardianRepository.existsByEmail(email);
         }
 
-    public void verifyPassword(long guardianId, String password) {
-        Guardian guardian = findVerifiedGuardian(guardianId);
+    public void verifyPassword(String email, String password) {
+        Guardian guardian = findVerifiedGuardian(email);
 
         if (!passwordEncoder.matches(password, guardian.getPassword())) {
 
