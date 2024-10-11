@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.constraints.Positive;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -98,6 +99,7 @@ public class MemberController {
     // 어드민만 승인 가능
     public ResponseEntity approveMember(@PathVariable("member-id") Long memberId) {
         Member member = memberService.aprroveMember(memberId);
+        member.setCreatedAt(LocalDateTime.now());
         MemberDto.Response responseDto = memberMapper.memberToResponseDto(member);
         return ResponseEntity.ok(new SingleResponseDto<>(responseDto));
     }

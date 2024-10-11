@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -94,6 +95,9 @@ public class Member {
 
     @Column(nullable = false)
     private LocalDate birthDate;  // 생년월일
+
+    @Column(nullable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
 
 
     public enum MemberStatus {
