@@ -28,7 +28,8 @@ public class MemberDto {
         private String medicalHistory;
         private boolean milkDeliveryRequest;
         private String documentAttachment;
-   
+        // FCM 토큰 코드 추가
+        private String fcmToken;
     }
 
     @Getter
@@ -48,7 +49,8 @@ public class MemberDto {
         private String longitude;
         private boolean milkDeliveryRequest;
         private String documentAttachment;
-
+        // FCM 토큰 코드 추가
+        private String fcmToken;
     }
 
     @Getter
@@ -72,7 +74,15 @@ public class MemberDto {
         private String documentAttachment;
         private LocalDateTime createdAt;
         private String guardianContact;
+        // FCM 토큰 코드 추가
+        private String fcmToken;
+    }
 
 
+    // FCM 토큰 코드 추가
+    @Getter
+    @Setter
+    public static class FcmTokenUpdate {
+        private String fcmToken;
     }
 }

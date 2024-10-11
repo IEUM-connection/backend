@@ -99,6 +99,8 @@ public class Member {
     @Column(nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    @Column(nullable = true, name = "MEMBER_FCMTOKEN")
+    private String fcmToken;
 
     public enum MemberStatus {
         ACTIVE,  // 활성 상태
