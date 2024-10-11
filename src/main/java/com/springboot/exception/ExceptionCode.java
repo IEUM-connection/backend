@@ -23,7 +23,9 @@ public enum ExceptionCode {
     TOKEN_INVALID(403, "토큰값이 유효하지 않습니다."),
     UNAUTHORIZED_GUARDIAN(401, "권한이 없는 회원입니다."),
     CANNOT_CHANGE_ADMIN_STATUS(403, "Admin Status cannot change"),
-    NO_UPDATABLE_FIELDS(403, "NO_UPDATABLE_FIELDS");
+    NO_UPDATABLE_FIELDS(403, "NO_UPDATABLE_FIELDS"),
+    CONFIRM_PASSWORD_MISMATCH(402,"비밀번호가 일치하지 않습니다." ),
+    PASSWORD_WRONG(402,"Password Wrong." );
 
 
 
