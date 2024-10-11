@@ -4,6 +4,7 @@ package com.springboot.member.service;
 import com.springboot.exception.BusinessLogicException;
 import com.springboot.exception.ExceptionCode;
 import com.springboot.member.entity.Guardian;
+import com.springboot.member.entity.Member;
 import com.springboot.member.repository.GuardianRepository;
 import org.springframework.context.ApplicationEventPublisher;
 
@@ -107,6 +108,11 @@ public class GuardianService {
         return optionalGuardian.orElseThrow(() ->
                 new BusinessLogicException(ExceptionCode.GUARDIAN_NOT_FOUND));
     }
+    public Guardian findVerifiedGuardian(String email) {
+        Optional<Guardian> optionalGuardian = guardianRepository.findByEmail(email);
+        return optionalGuardian.orElseThrow(() ->
+                new BusinessLogicException(ExceptionCode.GUARDIAN_NOT_FOUND));
+    }
 
     private void verifyExistsEmail(String email) {
         Optional<Guardian> guardian = guardianRepository.findByEmail(email);
@@ -116,6 +122,27 @@ public class GuardianService {
         public boolean isEmailDuplicate(String email) {
             return !guardianRepository.existsByEmail(email);
         }
+
+    public void verifyPassword(long guardianId, String password) {
+        Guardian guardian = findVerifiedGuardian(guardianId);
+
+        if (!passwordEncoder.matches(password, guardian.getPassword())) {
+
+            throw new BusinessLogicException(ExceptionCode.CONFIRM_PASSWORD_MISMATCH);
+        }
+    }
+
+    public Guardian updatePassword(Guardian guardian) {
+
+        if (guardian.getPassword() == null || guardian.getPassword().isEmpty()) {
+            throw new BusinessLogicException(ExceptionCode.PASSWORD_WRONG);
+        }
+
+        guardian.setPassword(passwordEncoder.encode(guardian.getPassword()));
+
+        return guardianRepository.save(guardian);
+    }
+
 
 }
 

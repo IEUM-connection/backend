@@ -8,13 +8,14 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
 
 
 import java.util.Optional;
 
 import static com.springboot.member.entity.Admin.AdminStatus.*;
 
-
+@Service
 public class AdminService {
     
 
@@ -28,15 +29,9 @@ public class AdminService {
         this.publisher = publisher;
     }
 
-    public Admin verifyadminCredentials(String email, String password) {
-        Admin admin = new Admin();
-        return admin;
-    }
-
 
     public Admin updateAdmin(Admin admin) {
-        // TODO should business logic
-        //throw new BusinessLogicException(ExceptionCode.NOT_IMPLEMENTATION);
+
         Admin findadmin = findVerifiedAdmin(admin.getAdminCode());
 
         return adminRepository.save(findadmin);
@@ -55,8 +50,7 @@ public class AdminService {
 
 
     public Admin findAdmin(String adminCode) {
-        // TODO should business logic
-        //throw new BusinessLogicException(ExceptionCode.NOT_IMPLEMENTATION);
+
         return findVerifiedAdmin(adminCode);
     }
 
@@ -112,7 +106,6 @@ public class AdminService {
         return optionaladmin.orElseThrow(() ->
                 new BusinessLogicException(ExceptionCode.ADMIN_NOT_FOUND));
     }
-
 
 
 }

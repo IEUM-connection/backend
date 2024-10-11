@@ -2,6 +2,7 @@ package com.springboot.member.mapper;
 
 import com.springboot.member.dto.GuardianDto;
 import com.springboot.member.dto.GuardianDto;
+import com.springboot.member.dto.MemberDto;
 import com.springboot.member.entity.Guardian;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -19,4 +20,6 @@ public interface GuardianMapper {
 
     void updateGuardianFromPatchDto(GuardianDto.Patch patchDto, @MappingTarget Guardian guardian);
 
+
+    GuardianDto.Response guardianToGuardianResponseDto(Guardian updatedguardian);
 }
