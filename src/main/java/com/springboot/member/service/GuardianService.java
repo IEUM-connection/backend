@@ -108,6 +108,7 @@ public class GuardianService {
         return optionalGuardian.orElseThrow(() ->
                 new BusinessLogicException(ExceptionCode.GUARDIAN_NOT_FOUND));
     }
+
     public Guardian findVerifiedGuardian(String email) {
         Optional<Guardian> optionalGuardian = guardianRepository.findByEmail(email);
         return optionalGuardian.orElseThrow(() ->
