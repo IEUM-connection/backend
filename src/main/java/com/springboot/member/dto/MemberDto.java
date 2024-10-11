@@ -4,6 +4,8 @@ import com.springboot.member.entity.Member;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 public class MemberDto {
@@ -14,6 +16,8 @@ public class MemberDto {
         private String address;
         private String detailedAddress;
         private String postalCode;
+        private String latitude;
+        private String longitude;
         private String tel;
         private String phone;
         private Long guardianId;
@@ -24,8 +28,7 @@ public class MemberDto {
         private String medicalHistory;
         private boolean milkDeliveryRequest;
         private String documentAttachment;
-        private String locationx;
-        private String locationy;
+   
     }
 
     @Getter
@@ -33,13 +36,19 @@ public class MemberDto {
     public static class Patch {
         private String name;
         private String tel;
+        private String phone;
         private String address;
         private String detailedAddress;
         private String postalCode;
         private String emergencyContact;
         private String notes;
-        private Member.MemberStatus memberStatus;
+        private String residentNumber;
         private String medicalHistory;
+        private String latitude;
+        private String longitude;
+        private boolean milkDeliveryRequest;
+        private String documentAttachment;
+
     }
 
     @Getter
@@ -52,8 +61,17 @@ public class MemberDto {
         private String tel;
         private String phone;
         private int age;
+        private String notes;
         private String relationship;
         private String medicalHistory;
-        private String status;
+        private String memberStatus;
+        private String adminNote;
+        private String latitude;
+        private String longitude;
+        private boolean milkDeliveryRequest;
+        private String documentAttachment;
+        private LocalDateTime createdAt;
+
+
     }
 }

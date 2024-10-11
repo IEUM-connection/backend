@@ -1,23 +1,34 @@
 package com.springboot.member.dto;
 
-import com.springboot.member.entity.Guardian;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Column;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 public class GuardianDto {
 
     @Getter
     @Setter
     public static class Post {
+        @Email
+        @NotBlank
         private String email;
+
+        @NotBlank
         private String password;
+
+        @NotBlank
         private String name;
+
         private String tel;
+
+        @NotBlank
         private String phone;
+
         private String address;
         private String detailedAddress;
         private String postalCode;
@@ -45,32 +56,27 @@ public class GuardianDto {
         private String address;
     }
 
-
-
     @Getter
     @AllArgsConstructor
-    public static class PatchPassword{
+    public static class PatchPassword {
 
-        private long guardianId;
         private String password;
 
-        public void setGuardianId(long guardianId) {
-            this.guardianId = guardianId;
-        }
+        private String newPassword;
+
 
     }
 
-
     @Getter
     @AllArgsConstructor
-    public static class Check{ private boolean isAvailable;}
-
-
-
+    public static class Check {
+        private boolean isAvailable;
+    }
 
     @Getter
     @Setter
     @AllArgsConstructor
+    @NoArgsConstructor
     public static class EmailCheckDto {
         @Email
         private String email;

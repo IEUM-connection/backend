@@ -4,6 +4,7 @@ package com.springboot.member.service;
 import com.springboot.exception.BusinessLogicException;
 import com.springboot.exception.ExceptionCode;
 import com.springboot.member.entity.Guardian;
+import com.springboot.member.entity.Member;
 import com.springboot.member.repository.GuardianRepository;
 import org.springframework.context.ApplicationEventPublisher;
 
@@ -37,7 +38,7 @@ public class GuardianService {
         verifyExistsEmail(guardian.getEmail());
         String encryptedPassword = passwordEncoder.encode(guardian.getPassword());
         guardian.setPassword(encryptedPassword);
-        guardian.setRole("ROLE_GUARDIAN"); // 고정된 역할로 설정
+        guardian.setRole("GUARDIAN"); // 고정된 역할로 설정
         Guardian savedGuardian = guardianRepository.save(guardian);
 
         //publisher.publishEvent(new GuardianRegistrationApplicationEvent(this, savedGuardian));
@@ -108,6 +109,12 @@ public class GuardianService {
                 new BusinessLogicException(ExceptionCode.GUARDIAN_NOT_FOUND));
     }
 
+    public Guardian findVerifiedGuardian(String email) {
+        Optional<Guardian> optionalGuardian = guardianRepository.findByEmail(email);
+        return optionalGuardian.orElseThrow(() ->
+                new BusinessLogicException(ExceptionCode.GUARDIAN_NOT_FOUND));
+    }
+
     private void verifyExistsEmail(String email) {
         Optional<Guardian> guardian = guardianRepository.findByEmail(email);
         if (guardian.isPresent()) throw new BusinessLogicException(ExceptionCode.GUARDIAN_EXISTS);
@@ -116,6 +123,27 @@ public class GuardianService {
         public boolean isEmailDuplicate(String email) {
             return !guardianRepository.existsByEmail(email);
         }
+
+    public void verifyPassword(String email, String password) {
+        Guardian guardian = findVerifiedGuardian(email);
+
+        if (!passwordEncoder.matches(password, guardian.getPassword())) {
+
+            throw new BusinessLogicException(ExceptionCode.CONFIRM_PASSWORD_MISMATCH);
+        }
+    }
+
+    public Guardian updatePassword(Guardian guardian) {
+
+        if (guardian.getPassword() == null || guardian.getPassword().isEmpty()) {
+            throw new BusinessLogicException(ExceptionCode.PASSWORD_WRONG);
+        }
+
+        guardian.setPassword(passwordEncoder.encode(guardian.getPassword()));
+
+        return guardianRepository.save(guardian);
+    }
+
 
 }
 
