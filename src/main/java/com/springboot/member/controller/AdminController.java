@@ -2,9 +2,7 @@ package com.springboot.member.controller;
 
 import com.springboot.dto.SingleResponseDto;
 import com.springboot.member.dto.AdminDto;
-import com.springboot.member.dto.GuardianDto;
 import com.springboot.member.entity.Admin;
-import com.springboot.member.entity.Guardian;
 import com.springboot.member.mapper.AdminMapper;
 import com.springboot.member.service.AdminService;
 import org.springframework.http.HttpStatus;

@@ -3,7 +3,6 @@ package com.springboot.member.service;
 import com.springboot.exception.BusinessLogicException;
 import com.springboot.exception.ExceptionCode;
 import com.springboot.member.entity.Admin;
-import com.springboot.member.entity.Guardian;
 import com.springboot.member.repository.AdminRepository;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
@@ -19,17 +18,14 @@ import static com.springboot.member.entity.Admin.AdminStatus.*;
 
 @Service
 public class AdminService {
-    
 
 
     private final AdminRepository adminRepository;
-    private final ApplicationEventPublisher publisher;
     private final PasswordEncoder passwordEncoder;
 
-    
-    public AdminService(AdminRepository adminRepository, ApplicationEventPublisher publisher, PasswordEncoder passwordEncoder) {
+
+    public AdminService(AdminRepository adminRepository, PasswordEncoder passwordEncoder) {
         this.adminRepository = adminRepository;
-        this.publisher = publisher;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -52,28 +48,26 @@ public class AdminService {
     }
 
 
-
     public Admin findAdmin(String adminCode) {
 
         return findVerifiedAdmin(adminCode);
     }
 
     public Admin findAdmin(String adminCode, String email) {
-        // TODO should business logic
-        //throw new BusinessLogicException(ExceptionCode.NOT_IMPLEMENTATION);
+
         return findVerifiedAdmin(adminCode);
     }
 
 
     public Page<Admin> findAdmins(int page, int size) {
-        // TODO should business logic
-        //throw new BusinessLogicException(ExceptionCode.NOT_IMPLEMENTATION);
+
         return adminRepository.findAll(PageRequest.of(page, size, Sort.by("adminId").descending()));
 
     }
-// 사번 넣어야함
+
+    // 사번 넣어야함
     public void deleteAdmin(String adminCode) {
-        // TODO should business logic
+
         Admin findAdmin = findVerifiedAdmin(adminCode);
         findAdmin.setAdminStatus(ADMIN_QUIT);
 // 가디언이랑 연결된 서비스 > 사용자도 지워져야하는가
