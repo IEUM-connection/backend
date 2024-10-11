@@ -73,9 +73,11 @@ public class MemberDto {
         private boolean milkDeliveryRequest;
         private String documentAttachment;
         private LocalDateTime createdAt;
+        private String guardianContact;
         // FCM 토큰 코드 추가
         private String fcmToken;
     }
+
 
     // FCM 토큰 코드 추가
     @Getter
