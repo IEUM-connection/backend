@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
-    Optional<Member> findByMemberCode(String authCode);
 
+    Optional<Member> findByMemberCode(String authCode);
     List<Member> findByAddressContaining(String location);
 
     List<Member> findByNameContainingAndAgeAndMedicalHistoryContaining(String query, int age, String medicalHistory);

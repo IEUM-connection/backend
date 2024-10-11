@@ -55,6 +55,7 @@ public class SecurityConfig {
                 .authorizeRequests(authorize -> authorize
                         .antMatchers("/h2/**").permitAll() // H2 Console 접근 허용
                         .antMatchers(HttpMethod.GET,"/guardians/email").permitAll()
+                        .antMatchers(HttpMethod.GET,"/members/member").hasAnyRole("MEMBER", "GUARDIAN", "ADMIN")
                         .antMatchers(HttpMethod.POST, "/members", "/guardians", "/auth/login", "/api/identity/**", "/email-code", "/verify-email-code/**", "/find-password/**", "/find-email").permitAll() // 회원가입 및 인증 관련 엔드포인트 허용
                         .antMatchers("/admin/**").hasRole("ADMIN") // 관리자 페이지
                         .antMatchers("/guardians/**").hasAnyRole("GUARDIAN", "ADMIN") // 보호자와 관리자만 접근 가능
