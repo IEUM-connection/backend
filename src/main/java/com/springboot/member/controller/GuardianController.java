@@ -47,10 +47,9 @@ public class GuardianController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping
-    public ResponseEntity getGuardian(Authentication authentication) {
-        String email = authentication.getName();
-        Guardian guardian = guardianService.findVerifiedGuardian(email);
+    @GetMapping("/{guardian-id}")
+    public ResponseEntity getGuardian(@PathVariable("guardian-id") Long guardianId) {
+        Guardian guardian = guardianService.findVerifiedGuardian(guardianId);
         GuardianDto.Response responseDto = mapper.guardianToResponseDto(guardian);
         return ResponseEntity.ok(new SingleResponseDto<>(responseDto));
     }
