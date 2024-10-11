@@ -31,6 +31,8 @@ public class Admin{
     @Column(nullable = false)
     private String location;
 
+    @Column(nullable = false)
+    private String name;
 
     @Column(unique = true)
     private String adminCode;

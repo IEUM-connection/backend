@@ -15,7 +15,8 @@ public class AdminDto {
     @Getter
     @Setter
     public static class Response {
-        private long adminId;          // 관리자 ID
+        private long adminId;
+        private String name;// 관리자 ID
         private String adminCode;      // 관리자 코드 (유니크)
         private String location;       // 관리자 위치
         private String role;           // 관리자 역할 (예: ROLE_ADMIN)

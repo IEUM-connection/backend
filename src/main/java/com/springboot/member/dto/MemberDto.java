@@ -71,6 +71,7 @@ public class MemberDto {
         private boolean milkDeliveryRequest;
         private String documentAttachment;
         private LocalDateTime createdAt;
+        private String guardianContact;
 
 
     }
