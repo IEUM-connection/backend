@@ -54,6 +54,15 @@ public class GuardianController {
         return ResponseEntity.ok(new SingleResponseDto<>(responseDto));
     }
 
+
+    @GetMapping
+    public ResponseEntity getGuardian(Authentication authentication) {
+        String email = authentication.getName();
+        Guardian guardian = guardianService.findVerifiedGuardian(email);
+        GuardianDto.Response responseDto = mapper.guardianToResponseDto(guardian);
+        return ResponseEntity.ok(new SingleResponseDto<>(responseDto));
+    }
+
     @GetMapping("/email")
     public ResponseEntity  checkEmailDuplicate( @Valid @RequestParam String email) {
 
