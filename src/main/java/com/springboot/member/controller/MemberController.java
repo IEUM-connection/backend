@@ -37,7 +37,8 @@ public class MemberController {
         this.guardianService = guardianService;
     }
 
-    @PostMapping    public ResponseEntity createMember(@RequestBody MemberDto.Post memberPostDto) {
+    @PostMapping
+    public ResponseEntity createMember(@RequestBody MemberDto.Post memberPostDto) {
         // Get the currently logged-in user's details
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String guardianEmail = authentication.getName();  // Email is the principal in this case

@@ -76,6 +76,7 @@ public class MemberDto {
         private String fcmToken;
         private String guardianName;  // 보호자의 이름
         private String guardianPhone; // 보호자의 전화번호
+
     }
 
 
