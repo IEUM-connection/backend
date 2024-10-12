@@ -9,6 +9,7 @@ import lombok.Setter;
 
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +48,9 @@ public class Guardian {
 
     @Column(nullable = false)
     private String role;
+
+    @Column(nullable = false)
+    private LocalDate birthDate;
 
     @Column(nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();

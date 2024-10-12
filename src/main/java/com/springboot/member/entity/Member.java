@@ -8,6 +8,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -99,6 +100,8 @@ public class Member {
     @Column(nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
+
+
     @Column(nullable = true, name = "MEMBER_FCMTOKEN")
     private String fcmToken;
 
@@ -107,5 +110,11 @@ public class Member {
         AWAITING_APPROVAL,  // 승인 대기 상태
         MEMBER_QUIT,  // 탈퇴한 회원
         SUSPENDED  // 정지된 회원
+    }
+
+
+    @PrePersist
+    public void generateMemberCode() {
+        this.memberCode = "MEM" + UUID.randomUUID().toString().substring(0, 3).toUpperCase();
     }
 }
