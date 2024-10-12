@@ -134,15 +134,19 @@ public class MemberController {
     }
     // FCM 토큰 코드 추가
     // FCM 토큰 업데이트를 위한 새로운 엔드포인트
-    @PostMapping("/{member-id}/fcm-token")
-    public ResponseEntity updateFcmToken(@PathVariable("member-id") Long memberId, @RequestBody MemberDto.FcmTokenUpdate fcmTokenDto) {
-        // 1. memberService를 통해 FCM 토큰을 업데이트합니다.
-        Member member = memberService.updateFcmToken(memberId, fcmTokenDto.getFcmToken());
+    @PostMapping("/fcm-token")
+    public ResponseEntity updateFcmToken(Authentication authentication, @RequestBody MemberDto.FcmTokenUpdate fcmTokenDto) {
+        // 1. 인증 객체에서 memberCode를 추출합니다.
+        String memberCode = authentication.getName();
 
-        // 2. 업데이트된 멤버 정보를 DTO로 변환합니다.
+        // 2. memberService를 통해 멤버를 찾고 FCM 토큰을 업데이트합니다.
+        Member member = memberService.findMember(memberCode);
+        member = memberService.updateFcmToken(member, fcmTokenDto.getFcmToken());
+
+        // 3. 업데이트된 멤버 정보를 DTO로 변환합니다.
         MemberDto.Response responseDto = memberMapper.memberToResponseDto(member);
 
-        // 3. 업데이트된 멤버 정보를 응답으로 반환합니다.
+        // 4. 업데이트된 멤버 정보를 응답으로 반환합니다.
         return ResponseEntity.ok(new SingleResponseDto<>(responseDto));
     }
 }
