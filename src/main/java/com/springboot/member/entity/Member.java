@@ -105,6 +105,7 @@ public class Member {
     @Column(nullable = true, name = "MEMBER_FCMTOKEN")
     private String fcmToken;
 
+    private  String adminName;
     public enum MemberStatus {
         ACTIVE,  // 활성 상태
         AWAITING_APPROVAL,  // 승인 대기 상태
