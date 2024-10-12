@@ -124,4 +124,10 @@ public class AdminService {
         admin.setPassword(passwordEncoder.encode(admin.getPassword()));
         return adminRepository.save(admin);
     }
+
+
+//    public Admin findAdminByLocation(String location) {
+//        return (Admin) adminRepository.findByLocation(location)
+//                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.ADMIN_NOT_FOUND));
+//    }
 }
