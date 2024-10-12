@@ -20,7 +20,6 @@ public class MemberDto {
         private String longitude;
         private String tel;
         private String phone;
-        private Long guardianId;
         private String emergencyContact;
         private int age;
         private String notes;
@@ -73,9 +72,10 @@ public class MemberDto {
         private boolean milkDeliveryRequest;
         private String documentAttachment;
         private LocalDateTime createdAt;
-        private String guardianContact;
         // FCM 토큰 코드 추가
         private String fcmToken;
+        private String guardianName;  // 보호자의 이름
+        private String guardianPhone; // 보호자의 전화번호
     }
 
 

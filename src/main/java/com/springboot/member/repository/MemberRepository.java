@@ -21,5 +21,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Page<Member> findAll(Pageable pageable);
 
     List<Member> findByRole(String role);
+
+    boolean existsByMemberCode(String memberCode);
 }
 

@@ -19,7 +19,10 @@ public interface MemberMapper {
 
     Member memberPostDtoToMember(MemberDto.Post postDto);
 
+    @Mapping(source = "guardian.name", target = "guardianName")
+    @Mapping(source = "guardian.phone", target = "guardianPhone")
     MemberDto.Response memberToResponseDto(Member member);
+
     List<MemberDto.Response> membersToResponseDtos(List<Member> members);
     void updateMemberFromPatchDto(MemberDto.Patch patchDto, @MappingTarget Member member);
 }
