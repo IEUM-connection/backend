@@ -32,7 +32,7 @@ public class GuardianDto {
         private String address;
         private String detailedAddress;
         private String postalCode;
-        private String birthDate;
+        private LocalDate birthDate;
     }
 
     @Getter
@@ -59,7 +59,7 @@ public class GuardianDto {
         private LocalDate createdAt;
         private String detailedAddress;
         private String postalCode;
-        private String birthDate;
+        private LocalDate birthDate;
     }
 
     @Getter
