@@ -51,9 +51,10 @@ public class MemberController {
         // 위치에 따른 어드민 이름 조회
         String address = memberPostDto.getAddress();  // memberPostDto에 address가 있다고 가정
         String adminName = adminService.findAdminNameByLocation(address);
-
+       ;
         // 멤버 DTO -> 엔티티로 변환
         Member member = memberMapper.memberPostDtoToMember(memberPostDto);
+        member.setAdminName(adminName);
         member.setGuardian(guardian);  // 가디언 정보 설정
 
         // 멤버 생성
@@ -61,7 +62,7 @@ public class MemberController {
 
         // 어드민 이름을 멤버 응답 DTO에 추가
         MemberDto.Response responseDto = memberMapper.memberToResponseDto(newMember);
-        responseDto.setAdminName(adminName);  // adminName을 응답 DTO에 추가
+        // adminName을 응답 DTO에 추가
 
         // 생성된 멤버의 응답 DTO 반환
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
