@@ -160,4 +160,16 @@ public class MemberController {
         // 4. 업데이트된 멤버 정보를 응답으로 반환합니다.
         return ResponseEntity.ok(new SingleResponseDto<>(responseDto));
     }
+    // 휴대폰 미사용 시간 업데이트를 위한 새로운 엔드포인트
+    @PatchMapping("/phone-inactive")
+    public ResponseEntity updatePhoneInactiveTime(Authentication authentication,
+        @RequestBody MemberDto.PhoneInactiveTimeUpdate request) {
+        String memberCode = authentication.getName();
+
+        Member member = memberService.findMember(memberCode);
+
+        member = memberService.updatePhoneInactiveTime(member, (int) request.getPhoneInactiveTimeMs());
+        MemberDto.Response responseDto = memberMapper.memberToResponseDto(member);
+        return ResponseEntity.ok(responseDto);
+    }
 }

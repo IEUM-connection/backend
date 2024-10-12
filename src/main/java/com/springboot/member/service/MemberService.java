@@ -135,4 +135,10 @@ public class MemberService {
     public boolean existsByGuardian(Guardian guardian) {
         return memberRepository.existsByGuardian(guardian);
     }
+
+    // 휴대폰 미사용시간 업데이트
+    public Member updatePhoneInactiveTime(Member member, int phoneInactiveDuration) {
+        member.setPhoneInactiveDuration(phoneInactiveDuration);
+        return memberRepository.save(member);
+    }
 }

@@ -77,7 +77,8 @@ public class MemberDto {
         private String guardianName;  // 보호자의 이름
         private String guardianPhone; // 보호자의 전화번호
         private String adminName;
-
+        // 휴대폰 미사용 시간
+        private int phoneInactiveTimeMs;
     }
 
 
@@ -87,4 +88,10 @@ public class MemberDto {
     public static class FcmTokenUpdate {
         private String fcmToken;
     }
+    // 휴대폰 미사용 시간 업데이트를 위한 새로운 내부 클래스
+    @Getter
+    @Setter
+    public static class PhoneInactiveTimeUpdate {
+        private long phoneInactiveTimeMs;
+        }
 }
