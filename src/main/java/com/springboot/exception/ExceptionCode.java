@@ -25,7 +25,8 @@ public enum ExceptionCode {
     CANNOT_CHANGE_ADMIN_STATUS(403, "Admin Status cannot change"),
     NO_UPDATABLE_FIELDS(403, "NO_UPDATABLE_FIELDS"),
     CONFIRM_PASSWORD_MISMATCH(402,"비밀번호가 일치하지 않습니다." ),
-    PASSWORD_WRONG(402,"Password Wrong." );
+    PASSWORD_WRONG(402,"Password Wrong." ),
+    INVALID_LOCATION(403, "Invalid authCode");
 
 
 

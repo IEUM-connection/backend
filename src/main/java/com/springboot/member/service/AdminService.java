@@ -127,13 +127,31 @@ public class AdminService {
     }
 
 
-    public String findAdminNameByLocation(String location) {
-        Optional<Admin> admin = adminRepository.findByLocation(location);
+    public String findAdminNameByLocation(String address) {
+        String[] parts = address.split(" ");
+        String district = null;
+
+        for (String part : parts) {
+            if (part.endsWith("구")) {
+                district = part;
+                break;
+            }
+        }
+
+        // "구"가 없으면 예외 발생
+        if (district == null) {
+            throw new BusinessLogicException(ExceptionCode.INVALID_LOCATION); // 구가 없는 경우
+        }
+
+        // "구" 단위를 사용해 관리자를 검색
+        Optional<Admin> admin = adminRepository.findByLocationContaining(district);
         if (admin.isPresent()) {
             return admin.get().getName();
         } else {
             throw new BusinessLogicException(ExceptionCode.ADMIN_NOT_FOUND);
         }
+
     }
+
 
 }
