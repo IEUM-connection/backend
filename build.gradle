@@ -72,6 +72,9 @@ dependencies {
 
     //sms
     implementation 'net.nurigo:sdk:4.3.0'
+
+    //json in java
+    implementation 'org.json:json:20240303'
 }
 
 tasks.named('javadoc') {
