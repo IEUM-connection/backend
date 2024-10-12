@@ -1,12 +1,11 @@
 package com.springboot.member.controller;
 
 import com.springboot.dto.*;
-import com.springboot.member.dto.AdminDto;
 import com.springboot.member.dto.MemberDto;
-import com.springboot.member.entity.Admin;
 import com.springboot.member.entity.Guardian;
 import com.springboot.member.entity.Member;
 import com.springboot.member.mapper.MemberMapper;
+import com.springboot.member.service.AdminService;
 import com.springboot.member.service.GuardianService;
 import com.springboot.member.service.MemberService;
 import org.springframework.data.domain.Page;
@@ -30,31 +29,39 @@ public class MemberController {
     private final MemberService memberService;
     private final MemberMapper memberMapper;
     private final GuardianService guardianService;
+    private final AdminService adminService;
 
-    public MemberController(MemberService memberService, MemberMapper memberMapper, GuardianService guardianService) {
+    public MemberController(MemberService memberService, MemberMapper memberMapper, GuardianService guardianService, AdminService adminService) {
         this.memberService = memberService;
         this.memberMapper = memberMapper;
         this.guardianService = guardianService;
+        this.adminService = adminService;
     }
 
     @PostMapping
     public ResponseEntity createMember(@RequestBody MemberDto.Post memberPostDto) {
-        // Get the currently logged-in user's details
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String guardianEmail = authentication.getName();  // Email is the principal in this case
+        String guardianEmail = authentication.getName();
 
-        // Find the guardian by email
+        // 가디언을 조회
         Guardian guardian = guardianService.findVerifiedGuardian(guardianEmail);
 
-        // Set the guardian in the member DTO or entity
+        // 위치에 따른 어드민 이름 조회
+        String address = memberPostDto.getAddress();  // memberPostDto에 location이 있다고 가정
+        String adminName = adminService.findAdminNameByLocation(address);
+
+        // 멤버 DTO -> 엔티티로 변환
         Member member = memberMapper.memberPostDtoToMember(memberPostDto);
         member.setGuardian(guardian);
 
+        // 어드민 이름을 멤버 응답 DTO에 추가
         Member newMember = memberService.createMember(member, guardian);
 
-        // 생성된 멤버의 응답 DTO 반환
+        MemberDto.Response responseDto = memberMapper.memberToResponseDto(newMember);
+        responseDto.setAdminName(adminName);  // adminName을 응답 DTO에 추가
 
-        return new ResponseEntity<>(memberMapper.memberToResponseDto(newMember), HttpStatus.CREATED);
+        // 생성된 멤버의 응답 DTO 반환
+        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
 
     @GetMapping("/{member-id}")

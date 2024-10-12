@@ -8,6 +8,7 @@ import lombok.Setter;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.time.LocalDate;
 
 public class GuardianDto {
 
@@ -31,6 +32,7 @@ public class GuardianDto {
         private String address;
         private String detailedAddress;
         private String postalCode;
+        private String birthDate;
     }
 
     @Getter
@@ -52,9 +54,12 @@ public class GuardianDto {
         private String email;
         private String name;
         private String tel;
+        private String phone;
         private String address;
+        private LocalDate createdAt;
         private String detailedAddress;
         private String postalCode;
+        private String birthDate;
     }
 
     @Getter

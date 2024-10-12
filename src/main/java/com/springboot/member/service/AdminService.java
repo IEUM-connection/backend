@@ -3,6 +3,7 @@ package com.springboot.member.service;
 import com.springboot.exception.BusinessLogicException;
 import com.springboot.exception.ExceptionCode;
 import com.springboot.member.entity.Admin;
+import com.springboot.member.entity.Guardian;
 import com.springboot.member.repository.AdminRepository;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
@@ -126,8 +127,13 @@ public class AdminService {
     }
 
 
-//    public Admin findAdminByLocation(String location) {
-//        return (Admin) adminRepository.findByLocation(location)
-//                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.ADMIN_NOT_FOUND));
-//    }
+    public String findAdminNameByLocation(String location) {
+        Optional<Admin> admin = adminRepository.findByLocation(location);
+        if (admin.isPresent()) {
+            return admin.get().getName();
+        } else {
+            throw new BusinessLogicException(ExceptionCode.ADMIN_NOT_FOUND);
+        }
+    }
+
 }
