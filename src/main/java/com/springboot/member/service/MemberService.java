@@ -2,6 +2,7 @@ package com.springboot.member.service;
 
 import com.springboot.exception.BusinessLogicException;
 import com.springboot.exception.ExceptionCode;
+import com.springboot.member.entity.Guardian;
 import com.springboot.member.entity.Member;
 import com.springboot.member.repository.MemberRepository;
 import org.springframework.data.domain.Page;
@@ -21,13 +22,22 @@ public class MemberService {
         this.memberRepository = memberRepository;
     }
 
-    public Member createMember(Member member) {
-        if (memberRepository.existsById(member.getMemberId())) {
+    public Member createMember(Member member, Guardian guardian) {
+        // memberCode를 기준으로 중복 검사
+        if (memberRepository.existsByMemberCode(member.getMemberCode())) {
             throw new BusinessLogicException(ExceptionCode.MEMBER_ALREADY_EXISTS);
         }
+
+        // 로그인된 Guardian을 Member에 설정
+        member.setGuardian(guardian);
+
+        // 초기 멤버 상태 설정
         member.setMemberStatus(Member.MemberStatus.AWAITING_APPROVAL);
+
+        // 멤버 저장
         return memberRepository.save(member);
     }
+
 
     public Member updateMember(Long memberId, Member updatedMember) {
         Member member = getMember(memberId);

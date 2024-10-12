@@ -4,13 +4,16 @@ import com.springboot.dto.*;
 import com.springboot.member.dto.AdminDto;
 import com.springboot.member.dto.MemberDto;
 import com.springboot.member.entity.Admin;
+import com.springboot.member.entity.Guardian;
 import com.springboot.member.entity.Member;
 import com.springboot.member.mapper.MemberMapper;
+import com.springboot.member.service.GuardianService;
 import com.springboot.member.service.MemberService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,18 +29,31 @@ import java.util.stream.Collectors;
 public class MemberController {
     private final MemberService memberService;
     private final MemberMapper memberMapper;
+    private final GuardianService guardianService;
 
-    public MemberController(MemberService memberService, MemberMapper memberMapper) {
+    public MemberController(MemberService memberService, MemberMapper memberMapper, GuardianService guardianService) {
         this.memberService = memberService;
         this.memberMapper = memberMapper;
+        this.guardianService = guardianService;
     }
 
-    @PostMapping
-    public ResponseEntity createMember(@RequestBody MemberDto.Post postDto) {
-        Member member = memberMapper.memberPostDtoToMember(postDto);
-        Member registerMember = memberService.createMember(member);
-        MemberDto.Response responseDto = memberMapper.memberToResponseDto(registerMember);
-        return ResponseEntity.ok(new SingleResponseDto<>(responseDto));
+    @PostMapping    public ResponseEntity createMember(@RequestBody MemberDto.Post memberPostDto) {
+        // Get the currently logged-in user's details
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String guardianEmail = authentication.getName();  // Email is the principal in this case
+
+        // Find the guardian by email
+        Guardian guardian = guardianService.findVerifiedGuardian(guardianEmail);
+
+        // Set the guardian in the member DTO or entity
+        Member member = memberMapper.memberPostDtoToMember(memberPostDto);
+        member.setGuardian(guardian);
+
+        Member newMember = memberService.createMember(member, guardian);
+
+        // 생성된 멤버의 응답 DTO 반환
+
+        return new ResponseEntity<>(memberMapper.memberToResponseDto(newMember), HttpStatus.CREATED);
     }
 
     @GetMapping("/{member-id}")

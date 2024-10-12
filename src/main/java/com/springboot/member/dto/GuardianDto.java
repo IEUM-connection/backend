@@ -28,7 +28,6 @@ public class GuardianDto {
 
         @NotBlank
         private String phone;
-
         private String address;
         private String detailedAddress;
         private String postalCode;
@@ -54,6 +53,8 @@ public class GuardianDto {
         private String name;
         private String tel;
         private String address;
+        private String detailedAddress;
+        private String postalCode;
     }
 
     @Getter
