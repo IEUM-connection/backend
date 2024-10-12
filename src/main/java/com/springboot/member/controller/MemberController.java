@@ -40,23 +40,26 @@ public class MemberController {
 
     @PostMapping
     public ResponseEntity createMember(@RequestBody MemberDto.Post memberPostDto) {
+        // 인증된 가디언의 이메일을 가져옴
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String guardianEmail = authentication.getName();
 
         // 가디언을 조회
         Guardian guardian = guardianService.findVerifiedGuardian(guardianEmail);
 
+
         // 위치에 따른 어드민 이름 조회
-        String address = memberPostDto.getAddress();  // memberPostDto에 location이 있다고 가정
+        String address = memberPostDto.getAddress();  // memberPostDto에 address가 있다고 가정
         String adminName = adminService.findAdminNameByLocation(address);
 
         // 멤버 DTO -> 엔티티로 변환
         Member member = memberMapper.memberPostDtoToMember(memberPostDto);
-        member.setGuardian(guardian);
+        member.setGuardian(guardian);  // 가디언 정보 설정
 
-        // 어드민 이름을 멤버 응답 DTO에 추가
+        // 멤버 생성
         Member newMember = memberService.createMember(member, guardian);
 
+        // 어드민 이름을 멤버 응답 DTO에 추가
         MemberDto.Response responseDto = memberMapper.memberToResponseDto(newMember);
         responseDto.setAdminName(adminName);  // adminName을 응답 DTO에 추가
 

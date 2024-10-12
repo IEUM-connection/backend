@@ -23,5 +23,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     List<Member> findByRole(String role);
 
     boolean existsByMemberCode(String memberCode);
+
+    boolean existsByGuardian(Guardian guardian);
 }
 

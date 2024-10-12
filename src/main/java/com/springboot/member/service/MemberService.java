@@ -27,6 +27,10 @@ public class MemberService {
         if (memberRepository.existsByMemberCode(member.getMemberCode())) {
             throw new BusinessLogicException(ExceptionCode.MEMBER_ALREADY_EXISTS);
         }
+        if (existsByGuardian(guardian)) {
+            throw new BusinessLogicException(ExceptionCode.MEMBER_ALREADY_EXISTS);
+        }
+
 
         // 로그인된 Guardian을 Member에 설정
         member.setGuardian(guardian);
@@ -126,5 +130,9 @@ public class MemberService {
 
         // 2. 변경된 멤버 정보를 저장하고 반환합니다.
         return memberRepository.save(member);
+    }
+
+    public boolean existsByGuardian(Guardian guardian) {
+        return memberRepository.existsByGuardian(guardian);
     }
 }
