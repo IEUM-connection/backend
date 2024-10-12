@@ -110,14 +110,11 @@ public class MemberService {
     }
     // FCM 토큰 코드 추가
     // FCM 토큰 업데이트를 위한 새로운 메소드
-    public Member updateFcmToken(Long memberId, String fcmToken) {
-        // 1. 주어진 memberId로 멤버를 조회합니다.
-        Member member = getMember(memberId);
-
-        // 2. 멤버의 FCM 토큰을 새로운 토큰으로 업데이트합니다.
+    public Member updateFcmToken(Member member, String fcmToken) {
+        // 1. 멤버의 FCM 토큰을 새로운 토큰으로 업데이트합니다.
         member.setFcmToken(fcmToken);
 
-        // 3. 변경된 멤버 정보를 저장하고 반환합니다.
+        // 2. 변경된 멤버 정보를 저장하고 반환합니다.
         return memberRepository.save(member);
     }
 }
