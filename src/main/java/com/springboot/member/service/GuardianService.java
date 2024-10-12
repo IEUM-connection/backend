@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 import static com.springboot.member.entity.Guardian.GuardianStatus.*;
@@ -40,8 +41,6 @@ public class GuardianService {
         guardian.setPassword(encryptedPassword);
         guardian.setRole("GUARDIAN"); // 고정된 역할로 설정
         Guardian savedGuardian = guardianRepository.save(guardian);
-
-        //publisher.publishEvent(new GuardianRegistrationApplicationEvent(this, savedGuardian));
         return savedGuardian;
     }
 
