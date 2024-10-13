@@ -127,7 +127,17 @@ public class MemberController {
 
     @GetMapping("/status/{status}")
     public ResponseEntity getMembersByStatus(@PathVariable Member.MemberStatus status, @RequestParam int page, @RequestParam int size) {
-        List<Member> members = memberService.getMembersByStatus(status);
+        Page<Member> members = memberService.getMembersByStatus(status, page - 1, size);
+        List<MemberDto.Response> responseDtos = members.getContent().stream()
+                .map(memberMapper::memberToResponseDto)
+                .collect(Collectors.toList());
+
+        return new ResponseEntity<>(new MultiResponseDto<>(responseDtos, members), HttpStatus.OK);
+    }
+
+    @GetMapping("/withoutPage")
+    public ResponseEntity getMembersNOPage() {
+        List<Member> members = memberService.getMembers();
         List<MemberDto.Response> responseDtos = members.stream()
                 .map(memberMapper::memberToResponseDto)
                 .collect(Collectors.toList());

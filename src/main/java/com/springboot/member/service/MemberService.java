@@ -95,8 +95,16 @@ public class MemberService {
         return memberRepository.findByNameContainingAndAgeAndMedicalHistoryContaining(query, age, medicalHistory);
     }
 
-    public List<Member> getMembersByStatus(Member.MemberStatus status) {
-        List<Member> members = memberRepository.findByMemberStatus(status);
+    public Page<Member> getMembersByStatus(Member.MemberStatus status, int page, int size) {
+        Page<Member> members = memberRepository.findByMemberStatus(status, PageRequest.of(page, size, Sort.by("memberId").descending()));
+        if (members.isEmpty()) {
+            throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
+        }
+        return members;
+    }
+
+    public List<Member> getMembers() {
+        List<Member> members = memberRepository.findAll();
         if (members.isEmpty()) {
             throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
         }
