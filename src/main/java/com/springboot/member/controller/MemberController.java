@@ -54,6 +54,7 @@ public class MemberController {
        ;
         // 멤버 DTO -> 엔티티로 변환
         Member member = memberMapper.memberPostDtoToMember(memberPostDto);
+
         member.setAdminName(adminName);
         member.setGuardian(guardian);  // 가디언 정보 설정
 
