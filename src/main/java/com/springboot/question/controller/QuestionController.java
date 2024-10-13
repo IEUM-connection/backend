@@ -2,6 +2,11 @@ package com.springboot.question.controller;
 
 import com.springboot.dto.MultiResponseDto;
 import com.springboot.dto.SingleResponseDto;
+import com.springboot.exception.BusinessLogicException;
+import com.springboot.member.entity.Admin;
+import com.springboot.member.entity.Guardian;
+import com.springboot.member.service.AdminService;
+import com.springboot.member.service.GuardianService;
 import com.springboot.question.dto.QuestionDto;
 import com.springboot.question.entity.Question;
 import com.springboot.question.mapper.QuestionMapper;
@@ -31,6 +36,8 @@ public class QuestionController {
     private final static String DEFAULT_QUESTION_URL = "/questions";
     private final QuestionMapper questionMapper;
     private final QuestionService questionService;
+    private final AdminService adminService;
+    private final GuardianService guardianService;
 
     @PostMapping
     public ResponseEntity postQuestion(@Valid @RequestBody QuestionDto.Post requestBody,
@@ -55,7 +62,19 @@ public class QuestionController {
     @GetMapping("/{question-id}")
     public ResponseEntity getQuestion(@PathVariable("question-id") @Positive long questionId,
                                       Authentication authentication) {
-        Question question = questionService.findQuestion(questionId, authentication);
+        String principal = authentication.getName();
+
+        Question question;
+        try {
+            // Admin으로 조회 시도
+            Admin admin = adminService.findVerifiedAdmin(principal);
+            question = questionService.findQuestion(questionId, admin);
+        } catch (BusinessLogicException e) {
+            // Admin이 아니면 Guardian으로 조회 시도
+            Guardian guardian = guardianService.findVerifiedGuardian(principal);
+            question = questionService.findQuestion(questionId, guardian);
+        }
+
         return new ResponseEntity<>(
                 new SingleResponseDto<>(questionMapper.questionToQuestionResponseDto(question)), HttpStatus.OK
         );
@@ -75,13 +94,25 @@ public class QuestionController {
             sortQuestion = sortQuestion.descending();  // 내림차순으로 변경
         }
 
+        String principal = authentication.getName(); // 사용자 이메일
 
-        Page<Question> pageQuestion = questionService.findQuestions(page - 1, size, sortQuestion, authentication);
+        Page<Question> pageQuestion;
+        try {
+            // Admin으로 조회 시도
+            Admin admin = adminService.findVerifiedAdmin(principal);
+            pageQuestion = questionService.findQuestionsForAdmin(page - 1, size, sortQuestion);
+        } catch (BusinessLogicException e) {
+            // Admin이 아니면 Guardian으로 조회 시도
+            Guardian guardian = guardianService.findVerifiedGuardian(principal);
+            pageQuestion = questionService.findQuestionsForGuardian(page - 1, size, sortQuestion, guardian);
+        }
+
         List<Question> questions = pageQuestion.getContent();
         return new ResponseEntity<>(
                 new MultiResponseDto<>(questionMapper.questionsToQuestionResponseDtos(questions), pageQuestion), HttpStatus.OK
         );
     }
+
 
     @DeleteMapping("/{question-id}")
     public ResponseEntity deleteQuestions(@PathVariable("question-id") @Positive long questionId,
