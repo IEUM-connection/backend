@@ -149,4 +149,13 @@ public class MemberService {
         member.setPhoneInactiveDuration(phoneInactiveDuration);
         return memberRepository.save(member);
     }
+
+
+    public Member getMemberByGuardian(Guardian guardian){
+
+        return memberRepository.findByGuardian(guardian)
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
+
+
+    }
 }

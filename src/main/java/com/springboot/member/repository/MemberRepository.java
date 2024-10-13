@@ -26,5 +26,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     boolean existsByMemberCode(String memberCode);
 
     boolean existsByGuardian(Guardian guardian);
+
+    Optional<Member> findByGuardian(Guardian guardian);
 }
 

@@ -145,7 +145,28 @@ public class MemberController {
 
         return ResponseEntity.ok(new SingleResponseDto<>(responseDtos));
     }
+    @GetMapping("/guardian")
+    public ResponseEntity getMemberByGuardian() {
 
+       
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String guardianEmail = authentication.getName();
+
+        Guardian guardian = guardianService.findVerifiedGuardian(guardianEmail);
+        if (guardian == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Guardian not found.");
+        }
+
+        // 가디언에 따른 멤버 조회
+        Member member = memberService.getMemberByGuardian(guardian);
+        if (member == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Member not found.");
+        }
+
+        // DTO 변환 후 응답 반환
+        MemberDto.Response responseDto = memberMapper.memberToResponseDto(member);
+        return ResponseEntity.ok(new SingleResponseDto<>(responseDto));
+    }
     @PatchMapping("/{member-id}/approve")
     // 어드민만 승인 가능
     public ResponseEntity approveMember(@PathVariable("member-id") Long memberId) {
@@ -183,4 +204,7 @@ public class MemberController {
         MemberDto.Response responseDto = memberMapper.memberToResponseDto(member);
         return ResponseEntity.ok(responseDto);
     }
+
+
+
 }
