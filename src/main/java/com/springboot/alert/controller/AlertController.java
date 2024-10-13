@@ -24,7 +24,7 @@ public class AlertController {
 
   // 알림 발송 및 저장
   @PostMapping("/send-alert")
-  public ResponseEntity<?> sendAlert(@RequestBody Alert alert) {
+  public ResponseEntity sendAlert(@RequestBody Alert alert) {
     try {
       Alert savedAlert = alertService.sendAndSaveAlert(alert);
       return ResponseEntity.ok().body(new AlertResponse(savedAlert.getId(), "알림이 성공적으로 발송되고 저장되었습니다."));
