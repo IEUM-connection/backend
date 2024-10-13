@@ -59,6 +59,8 @@ public class MemberDto {
         private String memberCode;
         private String name;
         private String address;
+        private String detailedAddress;
+        private String postalCode;
         private String tel;
         private String phone;
         private int age;
@@ -80,6 +82,7 @@ public class MemberDto {
         private String adminName;
         // 휴대폰 미사용 시간
         private int phoneInactiveTimeMs;
+
     }
 
 
