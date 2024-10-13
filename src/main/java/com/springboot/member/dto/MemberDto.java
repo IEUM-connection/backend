@@ -74,6 +74,7 @@ public class MemberDto {
         private LocalDateTime createdAt;
         // FCM 토큰 코드 추가
         private String fcmToken;
+        private Long guardianId;
         private String guardianName;  // 보호자의 이름
         private String guardianPhone; // 보호자의 전화번호
         private String adminName;

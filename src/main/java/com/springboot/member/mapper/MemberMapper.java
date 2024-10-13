@@ -21,6 +21,7 @@ public interface MemberMapper {
 
     @Mapping(source = "guardian.name", target = "guardianName")
     @Mapping(source = "guardian.phone", target = "guardianPhone")
+    @Mapping(source = "guardian.guardianId", target = "guardianId")
     MemberDto.Response memberToResponseDto(Member member);
 
     List<MemberDto.Response> membersToResponseDtos(List<Member> members);
