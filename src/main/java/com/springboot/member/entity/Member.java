@@ -44,8 +44,8 @@ public class Member {
     private String phone;  // 휴대전화 번호, 필수적이고 유니크
 
     @OneToOne
-    @JoinColumn(name = "guardianId", unique = true)
-    private Guardian guardian;  // 보호자 정보, One-to-One 관계
+    @JoinColumn(name = "guardian_id", unique = true)  // 보호자 정보, One-to-One 관계
+    private Guardian guardian;
 
     @Column(length = 50)
     private String emergencyContact;  // 긴급 연락처
@@ -74,7 +74,7 @@ public class Member {
     @Column(nullable = true)
     private int phoneInactiveDuration;  // 휴대전화 비활성화 기간(일수)
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false)
     private String role;  // 역할 (예: ROLE_MEMBER, ROLE_ADMIN 등)
 
     @Column(nullable = true)

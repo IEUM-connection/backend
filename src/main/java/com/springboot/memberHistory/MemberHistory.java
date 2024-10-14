@@ -2,19 +2,29 @@ package com.springboot.memberHistory;
 
 import com.springboot.member.entity.Guardian;
 import com.springboot.member.entity.Member;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name = "MEMBER_HISTORY")
+@Getter
+@Setter
 public class MemberHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long historyId;
+
 
     private Long memberId;  // Primary Key로 자동 증가되는 ID
 
-    @Column(unique = true, nullable = false, length = 20)
+    @Column( nullable = false, length = 20)
     private String memberCode;  // 멤버 코드, 유니크하고 필수적
 
     @Column(nullable = true, length = 50)
@@ -32,11 +42,11 @@ public class MemberHistory {
     @Column(nullable = true, length = 20)
     private String tel;  // 전화번호 (일반 전화)
 
-    @Column(nullable = false, unique = true, length = 15)
+    @Column(nullable = false, length = 15)
     private String phone;  // 휴대전화 번호, 필수적이고 유니크
 
 
-    private String guardianId;  // 보호자 정보, One-to-One 관계
+    private Long guardianId;  // 보호자 정보, One-to-One 관계
 
     @Column(length = 50)
     private String emergencyContact;  // 긴급 연락처
@@ -74,8 +84,6 @@ public class MemberHistory {
     @Column(length = 255)
     private String documentAttachment;  // 문서 첨부
 
-    @Column(nullable = true, length = 13)
-    private String residentNumber;  // 주민등록번호 (암호화 가능)
 
     @Lob
     @Column(nullable = true)
@@ -91,13 +99,13 @@ public class MemberHistory {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(nullable = false)
-    private final LocalDateTime modifiedAt = LocalDateTime.now();
-
     @Column(nullable = true, name = "MEMBER_FCMTOKEN")
     private String fcmToken;
 
     private  String adminName;
+
+    private LocalDateTime modifiedAt = LocalDateTime.now();
+
 
 
 }

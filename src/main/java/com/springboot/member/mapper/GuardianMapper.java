@@ -18,7 +18,7 @@ public interface GuardianMapper {
     @Mapping(source = "guardian.guardianId", target = "guardianId")
     GuardianDto.Response guardianToResponseDto(Guardian guardian);
 
-    void updateGuardianFromPatchDto(GuardianDto.Patch patchDto, @MappingTarget Guardian guardian);
+    Guardian patchDtoToGuardian(GuardianDto.Patch patchDto);
 
 
     GuardianDto.Response guardianToGuardianResponseDto(Guardian updatedguardian);

@@ -4,6 +4,7 @@ import com.springboot.member.entity.Member;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -23,6 +24,7 @@ public class MemberDto {
         private String emergencyContact;
         private int age;
         private String notes;
+        private LocalDate birthDate;
         private String relationship;
         private String medicalHistory;
         private boolean milkDeliveryRequest;
@@ -42,12 +44,15 @@ public class MemberDto {
         private String postalCode;
         private String emergencyContact;
         private String notes;
+        private int age;
+        private String adminNote;
         private String residentNumber;
         private String medicalHistory;
         private String latitude;
         private String longitude;
         private boolean milkDeliveryRequest;
         private String documentAttachment;
+        private int powerUsage;
         // FCM 토큰 코드 추가
         private String fcmToken;
     }
@@ -74,6 +79,7 @@ public class MemberDto {
         private boolean milkDeliveryRequest;
         private String documentAttachment;
         private LocalDateTime createdAt;
+        private LocalDate birthDate;
         // FCM 토큰 코드 추가
         private String fcmToken;
         private Long guardianId;
@@ -82,6 +88,7 @@ public class MemberDto {
         private String adminName;
         // 휴대폰 미사용 시간
         private int phoneInactiveTimeMs;
+        private int powerUsage;
 
     }
 

@@ -37,6 +37,7 @@ public class Admin{
     @Column(unique = true)
     private String adminCode;
 
+    private String phone;
 
 
     @Column(nullable = false)

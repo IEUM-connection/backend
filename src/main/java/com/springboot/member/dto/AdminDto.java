@@ -21,6 +21,7 @@ public class AdminDto {
         private String location;       // 관리자 위치
         private String role;           // 관리자 역할 (예: ROLE_ADMIN)
         private Admin.AdminStatus adminStatus; // 관리자 상태 (활성, 휴면, 탈퇴)
+        private String phone;
     }
 
 

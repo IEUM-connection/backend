@@ -6,6 +6,8 @@ import com.springboot.member.entity.Guardian;
 import com.springboot.member.entity.Member;
 import com.springboot.member.repository.MemberRepository;
 import com.springboot.memberHistory.MemberHistory;
+import com.springboot.memberHistory.MemberHistoryMapper;
+import com.springboot.memberHistory.MemberHistoryRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -13,14 +15,17 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final MemberHistoryRepository memberHistoryRepository;
 
-    public MemberService(MemberRepository memberRepository) {
+    public MemberService(MemberRepository memberRepository, MemberHistoryRepository memberHistoryRepository) {
         this.memberRepository = memberRepository;
+        this.memberHistoryRepository = memberHistoryRepository;
     }
 
     public Member createMember(Member member, Guardian guardian) {
@@ -32,33 +37,80 @@ public class MemberService {
             throw new BusinessLogicException(ExceptionCode.MEMBER_ALREADY_EXISTS);
         }
 
-
-        // 로그인된 Guardian을 Member에 설정
         member.setGuardian(guardian);
 
-        // 초기 멤버 상태 설정
         member.setMemberStatus(Member.MemberStatus.AWAITING_APPROVAL);
+        member.setRole("MEMBER");
+        Member savedMember = memberRepository.save(member);
+        saveMemberHistory(savedMember);
+
 
         // 멤버 저장
-        return memberRepository.save(member);
+        return savedMember;
     }
 
 
     public Member updateMember(Long memberId, Member updatedMember) {
         Member member = getMember(memberId);
-        Optional.ofNullable(updatedMember.getName()).ifPresent(member::setName);
-        Optional.ofNullable(updatedMember.getTel()).ifPresent(member::setTel);
-        Optional.ofNullable(updatedMember.getPhone()).ifPresent(member::setPhone);
-        Optional.ofNullable(updatedMember.getAddress()).ifPresent(member::setAddress);
-        Optional.ofNullable(updatedMember.getMedicalHistory()).ifPresent(member::setMedicalHistory);
-        Optional.ofNullable(updatedMember.getDetailedAddress()).ifPresent(member::setDetailedAddress);
-        Optional.ofNullable(updatedMember.getLatitude()).ifPresent(member::setLatitude);
-        Optional.ofNullable(updatedMember.getLongitude()).ifPresent(member::setLongitude);
-        Optional.ofNullable(updatedMember.getPostalCode()).ifPresent(member::setPostalCode);
-        Optional.ofNullable(updatedMember.getEmergencyContact()).ifPresent(member::setEmergencyContact);
-        Optional.ofNullable(updatedMember.getDocumentAttachment()).ifPresent(member::setDocumentAttachment);
-        Optional.ofNullable(updatedMember.getResidentNumber()).ifPresent(member::setResidentNumber);
-        return memberRepository.save(member);
+        String changeDetails = getChangeDetails(member, updatedMember);
+
+        if (updatedMember.getName() != null) {
+            member.setName(updatedMember.getName());
+        }
+        if (updatedMember.getAge() != 0) {
+            member.setAge(updatedMember.getAge());
+        }
+        if (updatedMember.getTel() != null) {
+            member.setTel(updatedMember.getTel());
+        }
+        if (updatedMember.getPhone() != null) {
+            member.setPhone(updatedMember.getPhone());
+        }
+        if (updatedMember.getAddress() != null) {
+            member.setAddress(updatedMember.getAddress());
+        }
+        if (updatedMember.getMedicalHistory() != null) {
+            member.setMedicalHistory(updatedMember.getMedicalHistory());
+        }
+        if (updatedMember.getDetailedAddress() != null) {
+            member.setDetailedAddress(updatedMember.getDetailedAddress());
+        }
+        if (updatedMember.getLatitude() != null) {
+            member.setLatitude(updatedMember.getLatitude());
+        }
+        if (updatedMember.getLongitude() != null) {
+            member.setLongitude(updatedMember.getLongitude());
+        }
+        if (updatedMember.getPostalCode() != null) {
+            member.setPostalCode(updatedMember.getPostalCode());
+        }
+        if (updatedMember.getEmergencyContact() != null) {
+            member.setEmergencyContact(updatedMember.getEmergencyContact());
+        }
+        if (updatedMember.getDocumentAttachment() != null) {
+            member.setDocumentAttachment(updatedMember.getDocumentAttachment());
+        }
+
+        if (updatedMember.getRelationship() != null) {
+            member.setRelationship(updatedMember.getRelationship());
+        }
+        if (updatedMember.getNotes() != null) {
+            member.setNotes(updatedMember.getNotes());
+        }
+        if (updatedMember.getAdminNote() != null) {
+            member.setAdminNote(updatedMember.getAdminNote());
+        }
+        if (updatedMember.getFcmToken() != null) {
+            member.setFcmToken(updatedMember.getFcmToken());
+        }
+
+
+        Member savedMember = memberRepository.save(member);
+
+        // 히스토리 기록
+        saveMemberHistory(savedMember);
+
+        return savedMember;
     }
 
     public Member quitMember(Long memberId) {
@@ -72,17 +124,7 @@ public class MemberService {
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
     }
 
-    public Member addNotes(Long memberId, String notes) {
-        Member member = getMember(memberId);
-        member.setNotes(notes);
-        return memberRepository.save(member);
-    }
 
-    public Member addAdminNote(Long memberId, String notes) {
-        Member member = getMember(memberId);
-        member.setAdminNote(notes);
-        return memberRepository.save(member);
-    }
 
     public List<Member> getMembersByLocation(String location) {
         List<Member> members = memberRepository.findByAddressContaining(location);
@@ -120,7 +162,7 @@ public class MemberService {
         return members;
     }
 
-    public Member aprroveMember(Long memberId) {
+    public Member approveMember(Long memberId) {
         Member member = getMember(memberId);
         member.setMemberStatus(Member.MemberStatus.ACTIVE);
         return memberRepository.save(member);
@@ -142,7 +184,10 @@ public class MemberService {
     }
 
     public boolean existsByGuardian(Guardian guardian) {
-        return memberRepository.existsByGuardian(guardian);
+       if( memberRepository.findByGuardian(guardian) != null){
+           return false;
+       }
+       return true;
     }
 
     // 휴대폰 미사용시간 업데이트
@@ -156,12 +201,225 @@ public class MemberService {
 
         return memberRepository.findByGuardian(guardian)
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
+    }
+
+    private void saveMemberHistory(Member member) {
+
+        MemberHistory memberHistory = new MemberHistory();
+        memberHistory.setMemberId(member.getMemberId());
+        memberHistory.setMemberStatus(member.getMemberStatus());
+        memberHistory.setAddress(memberHistory.getAddress());
+        memberHistory.setMemberCode(member.getMemberCode());
+        memberHistory.setAdminNote(member.getAdminNote());
+        memberHistory.setAdminName(member.getAdminName());
+        memberHistory.setNotes(member.getNotes());
+        memberHistory.setTel(member.getTel());
+        memberHistory.setMedicalHistory(member.getMedicalHistory());
+        memberHistory.setAge(member.getAge());
+        memberHistory.setBirthDate(member.getBirthDate());
+        memberHistory.setPhone(member.getPhone());
+        memberHistory.setCreatedAt(member.getCreatedAt());
+        memberHistory.setDetailedAddress(member.getDetailedAddress());
+        memberHistory.setDocumentAttachment(member.getDocumentAttachment());
+        memberHistory.setEmergencyContact(member.getEmergencyContact());
+        memberHistory.setFcmToken(member.getFcmToken());
+        memberHistory.setLatitude(member.getLatitude());
+        memberHistory.setLongitude(member.getLongitude());
+        memberHistory.setMilkDeliveryRequest(member.isMilkDeliveryRequest());
+       memberHistory.setPostalCode(member.getPostalCode());
+       memberHistory.setPowerUsage(member.getPowerUsage());
+       memberHistory.setRelationship(member.getRelationship());
+       memberHistory.setRole(member.getRole());
+       memberHistory.setPhoneInactiveDuration(member.getPhoneInactiveDuration());
+       memberHistory.setName(member.getName());
+        memberHistory.setGuardianId(member.getGuardian().getGuardianId());
+        memberHistoryRepository.save(memberHistory);
+    }
+
+    // 변경 사항 추적 메서드
+    private String getChangeDetails(Member existingMember, Member updatedMember) {
+        StringBuilder changes = new StringBuilder();
+        // 디버깅용 로그 추가
+        System.out.println("Existing Member: " + existingMember);
+        System.out.println("Updated Member: " + updatedMember);
+        // 이름 변경 감지
+        Optional.ofNullable(updatedMember.getName())
+                .filter(name -> !name.equals(existingMember.getName()))
+                .ifPresent(name -> {
+                    changes.append("Name changed from ")
+                            .append(existingMember.getName() == null ? "unknown" : existingMember.getName())
+                            .append(" to ")
+                            .append(name)
+                            .append(". ");
+                });
+
+        // 주소 변경 감지
+        Optional.ofNullable(updatedMember.getAddress())
+                .filter(address -> !address.equals(existingMember.getAddress()))
+                .ifPresent(address -> {
+                    changes.append("Address changed from ")
+                            .append(existingMember.getAddress() == null ? "unknown" : existingMember.getAddress())
+                            .append(" to ")
+                            .append(address)
+                            .append(". ");
+                });
+
+        // 전화번호 변경 감지
+        Optional.ofNullable(updatedMember.getTel())
+                .filter(tel -> !tel.equals(existingMember.getTel()))
+                .ifPresent(tel -> {
+                    changes.append("Tel changed from ")
+                            .append(existingMember.getTel() == null ? "unknown" : existingMember.getTel())
+                            .append(" to ")
+                            .append(tel)
+                            .append(". ");
+                });
+
+        // 핸드폰 번호 변경 감지
+        Optional.ofNullable(updatedMember.getPhone())
+                .filter(phone -> !phone.equals(existingMember.getPhone()))
+                .ifPresent(phone -> {
+                    changes.append("Phone changed from ")
+                            .append(existingMember.getPhone() == null ? "unknown" : existingMember.getPhone())
+                            .append(" to ")
+                            .append(phone)
+                            .append(". ");
+                });
+
+        // 의료 기록 변경 감지
+        Optional.ofNullable(updatedMember.getMedicalHistory())
+                .filter(medicalHistory -> !medicalHistory.equals(existingMember.getMedicalHistory()))
+                .ifPresent(medicalHistory -> {
+                    changes.append("Medical history changed from ")
+                            .append(existingMember.getMedicalHistory() == null ? "unknown" : existingMember.getMedicalHistory())
+                            .append(" to ")
+                            .append(medicalHistory)
+                            .append(". ");
+                });
+
+        // 상세 주소 변경 감지
+        Optional.ofNullable(updatedMember.getDetailedAddress())
+                .filter(detailedAddress -> !detailedAddress.equals(existingMember.getDetailedAddress()))
+                .ifPresent(detailedAddress -> {
+                    changes.append("Detailed address changed from ")
+                            .append(existingMember.getDetailedAddress() == null ? "unknown" : existingMember.getDetailedAddress())
+                            .append(" to ")
+                            .append(detailedAddress)
+                            .append(". ");
+                });
+
+        // 위도 변경 감지
+        Optional.ofNullable(updatedMember.getLatitude())
+                .filter(latitude -> !latitude.equals(existingMember.getLatitude()))
+                .ifPresent(latitude -> {
+                    changes.append("Latitude changed from ")
+                            .append(existingMember.getLatitude() == null ? "unknown" : existingMember.getLatitude())
+                            .append(" to ")
+                            .append(latitude)
+                            .append(". ");
+                });
+
+        // 경도 변경 감지
+        Optional.ofNullable(updatedMember.getLongitude())
+                .filter(longitude -> !longitude.equals(existingMember.getLongitude()))
+                .ifPresent(longitude -> {
+                    changes.append("Longitude changed from ")
+                            .append(existingMember.getLongitude() == null ? "unknown" : existingMember.getLongitude())
+                            .append(" to ")
+                            .append(longitude)
+                            .append(". ");
+                });
+
+        // 우편번호 변경 감지
+        Optional.ofNullable(updatedMember.getPostalCode())
+                .filter(postalCode -> !postalCode.equals(existingMember.getPostalCode()))
+                .ifPresent(postalCode -> {
+                    changes.append("Postal code changed from ")
+                            .append(existingMember.getPostalCode() == null ? "unknown" : existingMember.getPostalCode())
+                            .append(" to ")
+                            .append(postalCode)
+                            .append(". ");
+                });
+
+        // 비상 연락처 변경 감지
+        Optional.ofNullable(updatedMember.getEmergencyContact())
+                .filter(emergencyContact -> !emergencyContact.equals(existingMember.getEmergencyContact()))
+                .ifPresent(emergencyContact -> {
+                    changes.append("Emergency contact changed from ")
+                            .append(existingMember.getEmergencyContact() == null ? "unknown" : existingMember.getEmergencyContact())
+                            .append(" to ")
+                            .append(emergencyContact)
+                            .append(". ");
+                });
+
+        // 첨부 문서 변경 감지
+        Optional.ofNullable(updatedMember.getDocumentAttachment())
+                .filter(documentAttachment -> !documentAttachment.equals(existingMember.getDocumentAttachment()))
+                .ifPresent(documentAttachment -> {
+                    changes.append("Document attachment changed from ")
+                            .append(existingMember.getDocumentAttachment() == null ? "unknown" : existingMember.getDocumentAttachment())
+                            .append(" to ")
+                            .append(documentAttachment)
+                            .append(". ");
+                });
 
 
+
+        // 관계 변경 감지
+        Optional.ofNullable(updatedMember.getRelationship())
+                .filter(relationship -> !relationship.equals(existingMember.getRelationship()))
+                .ifPresent(relationship -> {
+                    changes.append("Relationship changed from ")
+                            .append(existingMember.getRelationship() == null ? "unknown" : existingMember.getRelationship())
+                            .append(" to ")
+                            .append(relationship)
+                            .append(". ");
+                });
+
+        // 메모 변경 감지
+        Optional.ofNullable(updatedMember.getNotes())
+                .filter(notes -> !notes.equals(existingMember.getNotes()))
+                .ifPresent(notes -> {
+                    changes.append("Notes changed from ")
+                            .append(existingMember.getNotes() == null ? "unknown" : existingMember.getNotes())
+                            .append(" to ")
+                            .append(notes)
+                            .append(". ");
+                });
+
+        // 관리자 메모 변경 감지
+        Optional.ofNullable(updatedMember.getAdminNote())
+                .filter(adminNote -> !adminNote.equals(existingMember.getAdminNote()))
+                .ifPresent(adminNote -> {
+                    changes.append("Admin note changed from ")
+                            .append(existingMember.getAdminNote() == null ? "unknown" : existingMember.getAdminNote())
+                            .append(" to ")
+                            .append(adminNote)
+                            .append(". ");
+                });
+
+        // FCM 토큰 변경 감지
+        Optional.ofNullable(updatedMember.getFcmToken())
+                .filter(fcmToken -> !fcmToken.equals(existingMember.getFcmToken()))
+                .ifPresent(fcmToken -> {
+                    changes.append("FCM token changed from ")
+                            .append(existingMember.getFcmToken() == null ? "unknown" : existingMember.getFcmToken())
+                            .append(" to ")
+                            .append(fcmToken)
+                            .append(". ");
+                });
+
+
+        if (changes.length() == 0) {
+            changes.append("No significant changes.");
+        }
+
+        return changes.toString();
     }
 
 
-    public MemberHistory saveMemberHistor(Member member){
-        MemberHistory memberHistory = new MemberHistory(member);
+    public Page<MemberHistory> getMemberHistory(Long memberId, int page, int size) {
+        Page<MemberHistory> histories = memberHistoryRepository.findByMemberId(memberId, PageRequest.of(page, size));
+        return histories;
     }
 }
