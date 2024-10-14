@@ -100,7 +100,6 @@ public class MedicalController {
         }
         rd.close();
         conn.disconnect();
-        System.out.println(convertXML(sb.toString()).toString());
 
         return ResponseEntity.ok(new SingleResponseDto<>(medicalMapper.infoToResponseDto(convertXML(sb.toString()))));
     }
