@@ -8,6 +8,9 @@ import com.springboot.member.mapper.MemberMapper;
 import com.springboot.member.service.AdminService;
 import com.springboot.member.service.GuardianService;
 import com.springboot.member.service.MemberService;
+import com.springboot.memberHistory.MemberHistory;
+import com.springboot.memberHistory.MemberHistoryDto;
+import com.springboot.memberHistory.MemberHistoryMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,12 +33,14 @@ public class MemberController {
     private final MemberMapper memberMapper;
     private final GuardianService guardianService;
     private final AdminService adminService;
+    private final MemberHistoryMapper memberHistoryMapper;
 
-    public MemberController(MemberService memberService, MemberMapper memberMapper, GuardianService guardianService, AdminService adminService) {
+    public MemberController(MemberService memberService, MemberMapper memberMapper, GuardianService guardianService, AdminService adminService, MemberHistoryMapper memberHistoryMapper) {
         this.memberService = memberService;
         this.memberMapper = memberMapper;
         this.guardianService = guardianService;
         this.adminService = adminService;
+        this.memberHistoryMapper = memberHistoryMapper;
     }
 
     @PostMapping
@@ -51,7 +56,7 @@ public class MemberController {
         // 위치에 따른 어드민 이름 조회
         String address = memberPostDto.getAddress();  // memberPostDto에 address가 있다고 가정
         String adminName = adminService.findAdminNameByLocation(address);
-       ;
+        ;
         // 멤버 DTO -> 엔티티로 변환
         Member member = memberMapper.memberPostDtoToMember(memberPostDto);
 
@@ -87,10 +92,12 @@ public class MemberController {
 
     @PatchMapping("/{member-id}")
     public ResponseEntity updateMember(@PathVariable("member-id") Long memberId, @RequestBody MemberDto.Patch patchDto) {
-        Member member = memberService.getMember(memberId);
-        memberMapper.updateMemberFromPatchDto(patchDto, member);
-        member = memberService.updateMember(memberId, member);
-        MemberDto.Response responseDto = memberMapper.memberToResponseDto(member);
+
+        Member currentMember = memberMapper.memberPatchDtoToMember(patchDto);
+
+        Member updatedmember  = memberService.updateMember(memberId, currentMember);
+
+        MemberDto.Response responseDto = memberMapper.memberToResponseDto(updatedmember);
         return ResponseEntity.ok(new SingleResponseDto<>(responseDto));
     }
 
@@ -102,20 +109,23 @@ public class MemberController {
 
     @PatchMapping("/{member-id}/notes")
     // 가디언이나 어드민만 수정 가능
-    public ResponseEntity addAdminComment(@PathVariable("member-id") Long memberId, @RequestBody String notes) {
-        Member member = memberService.addNotes(memberId, notes);
+    public ResponseEntity addAdminComment(@PathVariable("member-id") Long memberId, @RequestBody MemberDto.Patch patchDto) {
+        Member member = memberService.getMember(memberId);
+        memberMapper.memberPatchDtoToMember(patchDto);
+        member = memberService.updateMember(memberId, member);
         MemberDto.Response responseDto = memberMapper.memberToResponseDto(member);
         return ResponseEntity.status(201).body(new SingleResponseDto<>(responseDto));
     }
 
     @PatchMapping("/{member-id}/adminNote")
     // 어드민만 수정 가능
-    public ResponseEntity addAdminNote(@PathVariable("member-id") Long memberId, @RequestBody String notes) {
-        Member member = memberService.addAdminNote(memberId, notes);
+    public ResponseEntity addAdminNote(@PathVariable("member-id") Long memberId, @RequestBody MemberDto.Patch patchDto) {
+        Member member = memberService.getMember(memberId);
+        memberMapper.memberPatchDtoToMember(patchDto);
+        member = memberService.updateMember(memberId, member);
         MemberDto.Response responseDto = memberMapper.memberToResponseDto(member);
         return ResponseEntity.status(201).body(new SingleResponseDto<>(responseDto));
     }
-
     @GetMapping
     public ResponseEntity getAllMembers(@Positive @RequestParam int page, @Positive @RequestParam int size) {
         Page<Member> pageMembers = memberService.findAllMembers(page - 1, size);
@@ -148,7 +158,6 @@ public class MemberController {
     @GetMapping("/guardian")
     public ResponseEntity getMemberByGuardian() {
 
-       
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String guardianEmail = authentication.getName();
 
@@ -170,7 +179,7 @@ public class MemberController {
     @PatchMapping("/{member-id}/approve")
     // 어드민만 승인 가능
     public ResponseEntity approveMember(@PathVariable("member-id") Long memberId) {
-        Member member = memberService.aprroveMember(memberId);
+        Member member = memberService.approveMember(memberId);
         member.setCreatedAt(LocalDateTime.now());
         MemberDto.Response responseDto = memberMapper.memberToResponseDto(member);
         return ResponseEntity.ok(new SingleResponseDto<>(responseDto));
@@ -195,16 +204,24 @@ public class MemberController {
     // 휴대폰 미사용 시간 업데이트를 위한 새로운 엔드포인트
     @PatchMapping("/phone-inactive")
     public ResponseEntity updatePhoneInactiveTime(Authentication authentication,
-        @RequestBody MemberDto.PhoneInactiveTimeUpdate request) {
+                                                  @RequestBody MemberDto.PhoneInactiveTimeUpdate request) {
         String memberCode = authentication.getName();
 
         Member member = memberService.findMember(memberCode);
 
         member = memberService.updatePhoneInactiveTime(member, (int) request.getPhoneInactiveTimeMs());
         MemberDto.Response responseDto = memberMapper.memberToResponseDto(member);
-        return ResponseEntity.ok(responseDto);
+        return ResponseEntity.ok(new SingleResponseDto<>(responseDto));
     }
-
+    // 특정 멤버의 히스토리 조회
+    @GetMapping("/history/{member-id}")
+    public ResponseEntity getMemberHistory(@PathVariable("member-id") Long memberId, @Positive @RequestParam int page, @Positive @RequestParam int size) {
+        Page<MemberHistory> historyList = memberService.getMemberHistory(memberId, page - 1, size);
+        List<MemberHistoryDto> responseDtos = historyList.getContent().stream()
+                .map(memberHistoryMapper::memberHistoryToMemberHistoryDto)
+                .collect(Collectors.toList());
+        return new ResponseEntity<>(new MultiResponseDto<>(responseDtos, historyList), HttpStatus.OK);
+    }
 
 
 }

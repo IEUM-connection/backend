@@ -2,7 +2,9 @@ package com.springboot.member.controller;
 
 import com.springboot.dto.SingleResponseDto;
 import com.springboot.member.dto.GuardianDto;
+import com.springboot.member.dto.MemberDto;
 import com.springboot.member.entity.Guardian;
+import com.springboot.member.entity.Member;
 import com.springboot.member.mapper.GuardianMapper;
 import com.springboot.member.service.GuardianService;
 import org.springframework.http.HttpStatus;
@@ -34,11 +36,11 @@ public class GuardianController {
     @PatchMapping("/{guardian-id}")
     public ResponseEntity updateGuardian(@PathVariable("guardian-id") Long guardianId,
                                                                                   @RequestBody GuardianDto.Patch patchDto) {
-        Guardian guardian = guardianService.getGuardian(guardianId);
-        mapper.updateGuardianFromPatchDto(patchDto, guardian);
-        guardian = guardianService.updateGuardian(guardianId, guardian);
-        GuardianDto.Response responseDto = mapper.guardianToResponseDto(guardian);
+        Guardian currentGuardian = mapper.patchDtoToGuardian(patchDto);
+        Guardian updatedguardian = guardianService.updateGuardian(guardianId, currentGuardian);
+        GuardianDto.Response responseDto = mapper.guardianToResponseDto(updatedguardian);
         return ResponseEntity.ok(new SingleResponseDto<>(responseDto));
+
     }
 
     @DeleteMapping("/{guardian-id}")

@@ -33,6 +33,7 @@ public class GuardianDto {
         private String detailedAddress;
         private String postalCode;
         private LocalDate birthDate;
+
     }
 
     @Getter
@@ -60,6 +61,7 @@ public class GuardianDto {
         private String detailedAddress;
         private String postalCode;
         private LocalDate birthDate;
+
     }
 
     @Getter

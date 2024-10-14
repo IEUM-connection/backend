@@ -1,5 +1,7 @@
-package com.springboot.member.entity;
+package com.springboot.memberHistory;
 
+import com.springboot.member.entity.Guardian;
+import com.springboot.member.entity.Member;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,21 +10,21 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.UUID;
-
-@Entity
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "MEMBER")
-public class Member {
-
+@Entity
+@Table(name = "MEMBER_HISTORY")
+@Getter
+@Setter
+public class MemberHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long historyId;
+
+
     private Long memberId;  // Primary Key로 자동 증가되는 ID
 
-    @Column(unique = true, nullable = false, length = 20)
+    @Column( nullable = false, length = 20)
     private String memberCode;  // 멤버 코드, 유니크하고 필수적
 
     @Column(nullable = true, length = 50)
@@ -40,12 +42,11 @@ public class Member {
     @Column(nullable = true, length = 20)
     private String tel;  // 전화번호 (일반 전화)
 
-    @Column(nullable = false, unique = true, length = 15)
+    @Column(nullable = false, length = 15)
     private String phone;  // 휴대전화 번호, 필수적이고 유니크
 
-    @OneToOne
-    @JoinColumn(name = "guardian_id", unique = true)  // 보호자 정보, One-to-One 관계
-    private Guardian guardian;
+
+    private Long guardianId;  // 보호자 정보, One-to-One 관계
 
     @Column(length = 50)
     private String emergencyContact;  // 긴급 연락처
@@ -74,7 +75,7 @@ public class Member {
     @Column(nullable = true)
     private int phoneInactiveDuration;  // 휴대전화 비활성화 기간(일수)
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 20)
     private String role;  // 역할 (예: ROLE_MEMBER, ROLE_ADMIN 등)
 
     @Column(nullable = true)
@@ -90,30 +91,21 @@ public class Member {
 
     @Enumerated(EnumType.STRING)
     @Column(length = 20, nullable = false)
-    private MemberStatus memberStatus = MemberStatus.AWAITING_APPROVAL;  // 회원 상태
+    private Member.MemberStatus memberStatus;  // 회원 상태
 
     @Column(nullable = false)
     private LocalDate birthDate;  // 생년월일
 
     @Column(nullable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
-
-
+    private LocalDateTime createdAt;
 
     @Column(nullable = true, name = "MEMBER_FCMTOKEN")
     private String fcmToken;
 
     private  String adminName;
-    public enum MemberStatus {
-        ACTIVE,  // 활성 상태
-        AWAITING_APPROVAL,  // 승인 대기 상태
-        MEMBER_QUIT,  // 탈퇴한 회원
-        SUSPENDED  // 정지된 회원
-    }
+
+    private LocalDateTime modifiedAt = LocalDateTime.now();
 
 
-    @PrePersist
-    public void generateMemberCode() {
-        this.memberCode = "MEM" + UUID.randomUUID().toString().substring(0, 3).toUpperCase();
-    }
+
 }

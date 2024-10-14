@@ -37,6 +37,8 @@ public class Admin{
     @Column(unique = true)
     private String adminCode;
 
+    private String phone;
+
     @Column(nullable = true, name = "ADMIN_FCMTOKEN")
     private String fcmToken;
 
