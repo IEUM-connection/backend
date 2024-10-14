@@ -9,7 +9,9 @@ import com.springboot.member.repository.MemberRepository;
 import com.springboot.utillity.FirebaseCloudMessageService;
 import com.springboot.utillity.FcmMessageDto;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -111,7 +113,8 @@ public class AlertService {
     return tokens;
   }
 
-  public Page<Alert> getAllAlerts(Pageable pageable) {
+  public Page<Alert> getAllAlerts(int page, int size) {
+    Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
     return alertRepository.findAll(pageable);
   }
 
@@ -161,10 +164,12 @@ public class AlertService {
    * 알림 타입별로 알림을 조회하는 메서드
    *
    * @param type 알림 타입
-   * @param pageable 페이지 정보
+   * @param page 페이지 번호
+   * @param size 페이지 크기
    * @return 해당 타입의 알림 페이지
    */
-  public Page<Alert> getAlertsByType(String type, Pageable pageable) {
+  public Page<Alert> getAlertsByType(String type, int page, int size) {
+    Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
     return alertRepository.findByAlertType(type, pageable);
   }
 
@@ -172,21 +177,25 @@ public class AlertService {
    * 지정된 여러 알림 타입으로 알림을 조회하는 메서드
    *
    * @param types 알림 타입 목록
-   * @param pageable 페이지 정보
+   * @param page  페이지 번호
+   * @param size  페이지 크기
    * @return 해당 타입들의 알림 페이지
    */
-  public Page<Alert> getAlertsByTypes(List<String> types, Pageable pageable) {
+  public Page<Alert> getAlertsByTypes(List<String> types, int page, int size) {
+    Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
     return alertRepository.findByAlertTypeIn(types, pageable);
   }
 
   /**
    * 지정된 여러 알림 타입을 제외하고 알림을 조회하는 메서드
    *
-   * @param types 제외할 알림 타입 목록
-   * @param pageable 페이지 정보
+   * @param types 알림 타입 목록
+   * @param page  페이지 번호
+   * @param size  페이지 크기
    * @return 제외된 타입을 제외한 알림 페이지
    */
-  public Page<Alert> getAlertsExcludingTypes(List<String> types, Pageable pageable) {
+  public Page<Alert> getAlertsExcludingTypes(List<String> types, int page, int size) {
+    Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
     return alertRepository.findByAlertTypeNotIn(types, pageable);
   }
 }

@@ -4,8 +4,7 @@ import com.springboot.alert.entity.Alert;
 import com.springboot.alert.service.AlertService;
 import com.springboot.alert.dto.AlertResponse;
 import com.springboot.alert.dto.ErrorResponse;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,12 +12,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+
 @RestController
 @RequestMapping("/alerts")
 public class AlertController {
 
   private final AlertService alertService;
 
+  @Autowired
   public AlertController(AlertService alertService) {
     this.alertService = alertService;
   }
@@ -30,7 +32,8 @@ public class AlertController {
       return ResponseEntity.ok().body(new AlertResponse(
           savedAlert.getId(),
           "알림이 성공적으로 발송되고 저장되었습니다.",
-          savedAlert.getAlertType()
+          savedAlert.getAlertType(),
+          savedAlert.getCreatedAt()
       ));
     } catch (Exception e) {
       return ResponseEntity.internalServerError().body(new ErrorResponse(
@@ -42,12 +45,13 @@ public class AlertController {
   @GetMapping
   public ResponseEntity<?> getAllAlerts(@RequestParam int page, @RequestParam int size) {
     try {
-      Page<Alert> alertPage = alertService.getAllAlerts(PageRequest.of(page, size));
+      Page<Alert> alertPage = alertService.getAllAlerts(page, size);
       List<AlertResponse> alertResponses = alertPage.getContent().stream()
           .map(alert -> new AlertResponse(
               alert.getId(),
               alert.getContent(),
-              alert.getAlertType()
+              alert.getAlertType(),
+              alert.getCreatedAt()
           ))
           .collect(Collectors.toList());
       return ResponseEntity.ok().body(alertResponses);
@@ -65,7 +69,8 @@ public class AlertController {
       return ResponseEntity.ok().body(new AlertResponse(
           savedAlert.getId(),
           "도움 요청 알림이 성공적으로 발송되었습니다.",
-          savedAlert.getAlertType()
+          savedAlert.getAlertType(),
+          savedAlert.getCreatedAt()
       ));
     } catch (IllegalArgumentException e) {
       return ResponseEntity.badRequest().body(new ErrorResponse(
@@ -97,12 +102,13 @@ public class AlertController {
     }
 
     try {
-      Page<Alert> alertPage = alertService.getAlertsByType(type, PageRequest.of(page, size));
+      Page<Alert> alertPage = alertService.getAlertsByType(type, page, size);
       List<AlertResponse> alertResponses = alertPage.getContent().stream()
           .map(alert -> new AlertResponse(
               alert.getId(),
               alert.getContent(),
-              alert.getAlertType()
+              alert.getAlertType(),
+              alert.getCreatedAt()
           ))
           .collect(Collectors.toList());
       return ResponseEntity.ok().body(alertResponses);
@@ -128,12 +134,13 @@ public class AlertController {
     List<String> selectedTypes = Arrays.asList("일반", "긴급", "공지", "정기");
 
     try {
-      Page<Alert> alertPage = alertService.getAlertsByTypes(selectedTypes, PageRequest.of(page, size));
+      Page<Alert> alertPage = alertService.getAlertsByTypes(selectedTypes, page, size);
       List<AlertResponse> alertResponses = alertPage.getContent().stream()
           .map(alert -> new AlertResponse(
               alert.getId(),
               alert.getContent(),
-              alert.getAlertType()
+              alert.getAlertType(),
+              alert.getCreatedAt()
           ))
           .collect(Collectors.toList());
       return ResponseEntity.ok().body(alertResponses);
@@ -159,12 +166,13 @@ public class AlertController {
     List<String> excludedTypes = Arrays.asList("일반", "긴급", "공지", "정기");
 
     try {
-      Page<Alert> alertPage = alertService.getAlertsExcludingTypes(excludedTypes, PageRequest.of(page, size));
+      Page<Alert> alertPage = alertService.getAlertsExcludingTypes(excludedTypes, page, size);
       List<AlertResponse> alertResponses = alertPage.getContent().stream()
           .map(alert -> new AlertResponse(
               alert.getId(),
               alert.getContent(),
-              alert.getAlertType()
+              alert.getAlertType(),
+              alert.getCreatedAt()
           ))
           .collect(Collectors.toList());
       return ResponseEntity.ok().body(alertResponses);
