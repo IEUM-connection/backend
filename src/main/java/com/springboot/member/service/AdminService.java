@@ -152,6 +152,10 @@ public class AdminService {
         }
 
     }
-
+        //FCM 토큰
+        public Admin updateFcmToken(Admin admin, String fcmToken) {
+            admin.setFcmToken(fcmToken);
+            return adminRepository.save(admin);
+        }
 
 }

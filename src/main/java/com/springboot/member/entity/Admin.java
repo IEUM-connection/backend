@@ -37,7 +37,8 @@ public class Admin{
     @Column(unique = true)
     private String adminCode;
 
-
+    @Column(nullable = true, name = "ADMIN_FCMTOKEN")
+    private String fcmToken;
 
     @Column(nullable = false)
     private String role;
