@@ -26,12 +26,13 @@ public class RegistrationNumberController {
     public Map<String, Object> verifyIdentity(
             @RequestParam String name,         // 요청에서 받은 이름
             @RequestParam String phoneNo,      // 요청에서 받은 전화번호
-            @RequestParam String identity      // 요청에서 받은 신분증 정보
+            @RequestParam String identity,      // 요청에서 받은 신분증 정보
+            @RequestParam int telecom
     ) {
         // authService를 통해 accessToken을 가져옴
         String accessToken = authService.getAccessToken();
         // verificationService를 사용해 신분증 검증 로직을 실행하고 결과를 반환
-        return verificationService.verifyIdentity(accessToken, identity, name, phoneNo);
+        return verificationService.verifyIdentity(accessToken, identity, name, phoneNo, telecom);
     }
 
     // 추가 신분증 인증을 처리하는 POST 요청 메서드
@@ -39,11 +40,12 @@ public class RegistrationNumberController {
     public Map<String, Object> completeAuth(
             @RequestParam String name,         // 요청에서 받은 이름
             @RequestParam String phoneNo,      // 요청에서 받은 전화번호
-            @RequestParam String identity      // 요청에서 받은 신분증 정보
+            @RequestParam String identity, // 요청에서 받은 신분증 정보
+            @RequestParam int telecom
     ) {
         // authService를 통해 accessToken을 가져옴
         String accessToken = authService.getAccessToken();
         // verificationService를 사용해 추가 인증 로직을 실행하고 결과를 반환
-        return verificationService.addVerify(accessToken, identity, name, phoneNo);
+        return verificationService.addVerify(accessToken, identity, name, phoneNo, telecom);
     }
 }
