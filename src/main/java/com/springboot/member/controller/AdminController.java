@@ -44,4 +44,14 @@ public class AdminController {
         adminService.updatePassword(admin);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+    // 관리자 FCM 토큰 등록
+    @PostMapping("/fcm-token")
+    public ResponseEntity updateFcmToken(@RequestBody AdminDto.FcmTokenUpdate requestBody,
+        Authentication authentication) {
+        String adminCode = authentication.getName();
+        Admin admin = adminService.findVerifiedAdmin(adminCode);
+        Admin updatedAdmin = adminService.updateFcmToken(admin, requestBody.getFcmToken());
+        AdminDto.Response responseDto = mapper.adminToResponseDto(updatedAdmin);
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
 }

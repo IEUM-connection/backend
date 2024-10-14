@@ -2,6 +2,7 @@ package com.springboot.question.service;
 
 import com.springboot.exception.BusinessLogicException;
 import com.springboot.exception.ExceptionCode;
+import com.springboot.member.entity.Admin;
 import com.springboot.member.entity.Guardian;
 import com.springboot.member.repository.GuardianRepository;
 import com.springboot.question.entity.Question;
@@ -49,22 +50,42 @@ public class QuestionService extends ExtractGuardianEmail {
         return questionRepository.save(findQuestion);
     }
 
-    public Question findQuestion(long questionId, Authentication authentication) {
-        Guardian guardian = extractGuardianFromAuthentication(authentication, guardianRepository);
-        Question question = findVerifiedQuestion(questionId);
+    // Admin을 통해 모든 질문 조회
+    public Question findQuestion(long questionId, Admin admin) {
+        return findVerifiedQuestion(questionId);
+    }
 
+    // Guardian을 통해 자신의 질문만 조회
+    public Question findQuestion(long questionId, Guardian guardian) {
+        Question question = findVerifiedQuestion(questionId);
         if (!Objects.equals(question.getGuardian(), guardian)) {
             throw new BusinessLogicException(ExceptionCode.UNAUTHORIZED_GUARDIAN);
         }
-
         return question;
     }
 
+    public Guardian extractGuardianFromAuthentication(Authentication authentication, GuardianRepository guardianRepository) {
+        String guardianEmail = authentication.getName(); // 이메일을 기준으로 Guardian 조회
+        Optional<Guardian> optionalGuardian = guardianRepository.findByEmail(guardianEmail);
+        return optionalGuardian.orElseThrow(() ->
+                new BusinessLogicException(ExceptionCode.GUARDIAN_NOT_FOUND));
+    }
 
-    public Page<Question> findQuestions(int page, int size, Sort sort, Authentication authentication) {
-        Guardian guardian = extractGuardianFromAuthentication(authentication, guardianRepository);
+
+    // Admin을 위한 모든 질문 조회 메서드
+    public Page<Question> findQuestionsForAdmin(int page, int size, Sort sort) {
+        return questionRepository.findAll(PageRequest.of(page, size, sort));
+    }
+
+    // Guardian을 위한 자신의 질문만 조회 메서드
+    public Page<Question> findQuestionsForGuardian(int page, int size, Sort sort, Guardian guardian) {
         return questionRepository.findAllByGuardian(PageRequest.of(page, size, sort), guardian);
     }
+//
+//    public Page<Question> findQuestions(int page, int size, Sort sort, Authentication authentication) {
+//        Guardian guardian = extractGuardianFromAuthentication(authentication, guardianRepository);
+//        return questionRepository.findAllByGuardian(PageRequest.of(page, size, sort), guardian);
+//    }
 
     public void deleteQuestion(long questionId, Authentication authentication) {
         Guardian guardian = extractGuardianFromAuthentication(authentication, guardianRepository);
@@ -81,4 +102,6 @@ public class QuestionService extends ExtractGuardianEmail {
                 new BusinessLogicException(ExceptionCode.QUESTION_NOT_FOUND));
         return findQuestion;
     }
+
+
 }

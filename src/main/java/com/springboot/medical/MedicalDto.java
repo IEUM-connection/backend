@@ -12,17 +12,19 @@ public class MedicalDto {
     @Setter
     @AllArgsConstructor
     public static class Response {
-        private int rnum;
+//        private int rnum;
         private double distance;
-        private double latitude;
-        private double longitude;
+//        private double latitude;
+//        private double longitude;
+        // 병원분류명 ex)종합병원, 의원,...
         private String dutyDivName;
         private String dutyAddr;
-        private String dutyName;
-        private String hpid;
+        private String name;
         private String dutyTel1;
-        private String dutyFax;
-        private Integer startTime;
-        private Integer endTime;
+//        private String dutyFax;
+//        private Integer startTime;
+//        private Integer endTime;
+        // 운영상태
+        private Integer isOpen;
     }
 }
