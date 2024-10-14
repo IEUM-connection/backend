@@ -24,41 +24,25 @@ public interface MedicalMapper {
         for (int i = 0; i < itemArray.length(); i++) {
             JSONObject item = itemArray.getJSONObject(i);
 
-            if(item.isNull("yadmNm")){
-                int rnum = item.getInt("rnum");
-                double distance = item.getDouble("distance");
-                double latitude = item.getDouble("latitude");
-                double longitude = item.getDouble("longitude");
-                String dutyDivName = item.getString("dutyDivName");
-                String dutyAddr = item.getString("dutyAddr");
-                String dutyName = item.getString("dutyName");
-                String hpid = item.getString("hpid");
-                String dutyTel1 = item.getString("dutyTel1");
-                String dutyFax = item.optString("dutyFax", ""); // Null일 수 있으므로 optString 사용
-                Integer startTime = item.getInt("startTime");
-                Integer endTime = item.getInt("endTime");
-
-                MedicalDto.Response medical = new MedicalDto.Response(rnum, distance, latitude, longitude, dutyDivName, dutyAddr, dutyName, hpid, dutyTel1, dutyFax, startTime, endTime);
-                responseList.add(medical);
+            int rnum = item.getInt("rnum");
+            double distance = item.getDouble("distance");
+            double latitude = item.getDouble("latitude");
+            double longitude = item.getDouble("longitude");
+            String dutyDivName = item.getString("dutyDivName");
+            String dutyAddr = item.getString("dutyAddr");
+            String dutyName = item.getString("dutyName");
+            String hpid = item.getString("hpid");
+            String dutyTel1 = item.getString("dutyTel1");
+            String dutyFax = item.optString("dutyFax", ""); // Null일 수 있으므로 optString 사용
+            Integer startTime = item.getInt("startTime");
+            Integer endTime = item.getInt("endTime");
+            Integer isOpen = -1;
+            if(!item.isNull("dutyLvkl")){
+                isOpen = item.getInt("dutyLvkl");
             }
-            else {
-//                int rnum = item.getInt("rnum");
-                double distance = item.getDouble("distance") / 1000.0;
-                double latitude = item.getDouble("XPos");
-                double longitude = item.getDouble("YPos");
-                String dutyDivName = item.getString("yadmNm");
-                String dutyAddr = item.getString("addr");
-                String dutyName = item.getString("clCdNm");
-//                String hpid = item.getString("hpid");
-                String dutyTel1 = item.getString("telno");
-//                String dutyFax = item.optString("dutyFax", ""); // Null일 수 있으므로 optString 사용
 
-//                Integer startTime = item.getInt("startTime");
-//                Integer endTime = item.getInt("endTime");
-
-                MedicalDto.Response medical = new MedicalDto.Response(0, distance, latitude, longitude, dutyDivName, dutyAddr, dutyName, "", dutyTel1, "", 0, 0);
-                responseList.add(medical);
-            }
+            MedicalDto.Response medical = new MedicalDto.Response(rnum, distance, latitude, longitude, dutyDivName, dutyAddr, dutyName, hpid, dutyTel1, dutyFax, startTime, endTime, isOpen);
+            responseList.add(medical);
         }
 
         return responseList;

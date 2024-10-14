@@ -39,8 +39,8 @@ public class MedicalController {
         String[] param = location.split(",");
 
         urlBuilder.append("?" + URLEncoder.encode("serviceKey","UTF-8") + "=" + apikey); /*Service Key*/
-        urlBuilder.append("&" + URLEncoder.encode("WGS84_LON","UTF-8") + "=" + URLEncoder.encode(param[0], "UTF-8")); /*위도*/
-        urlBuilder.append("&" + URLEncoder.encode("WGS84_LAT","UTF-8") + "=" + URLEncoder.encode(param[1], "UTF-8")); /*경도*/
+        urlBuilder.append("&" + URLEncoder.encode("WGS84_LON","UTF-8") + "=" + URLEncoder.encode(param[0], "UTF-8")); /*위도-Y*/
+        urlBuilder.append("&" + URLEncoder.encode("WGS84_LAT","UTF-8") + "=" + URLEncoder.encode(param[1], "UTF-8")); /*경도-X*/
         urlBuilder.append("&" + URLEncoder.encode("pageNo","UTF-8") + "=" + URLEncoder.encode("1", "UTF-8")); /*페이지 번호*/
         urlBuilder.append("&" + URLEncoder.encode("numOfRows","UTF-8") + "=" + URLEncoder.encode("30", "UTF-8")); /*목록 건수*/
 
@@ -70,7 +70,6 @@ public class MedicalController {
     @GetMapping("/hospital")
     public ResponseEntity hospital(@RequestParam String location) throws IOException {
         // 경도,위도로 들어옴
-
         // 근처 병원을 받아오는 api
         StringBuilder urlBuilder = new StringBuilder("http://apis.data.go.kr/B552657/HsptlAsembySearchService/getHsptlMdcncLcinfoInqire"); /*URL*/
 
@@ -105,46 +104,6 @@ public class MedicalController {
 
         return ResponseEntity.ok(new SingleResponseDto<>(medicalMapper.infoToResponseDto(convertXML(sb.toString()))));
     }
-
-//    @GetMapping("/hospital")
-//    public ResponseEntity hospital(@RequestParam String location) throws IOException {
-//        // 경도,위도로 들어옴
-//
-//        // 근처 병원을 받아오는 api
-//        StringBuilder urlBuilder = new StringBuilder("http://apis.data.go.kr/B551182/hospInfoServicev2/getHospBasisList"); /*URL*/
-//
-//        //주소 파싱
-//        String[] param = location.split(",");
-//
-//        urlBuilder.append("?" + URLEncoder.encode("ServiceKey","UTF-8") + "=" + apikey); /*Service Key*/
-//        urlBuilder.append("&" + URLEncoder.encode("yPos","UTF-8") + "=" + URLEncoder.encode(param[1], "UTF-8")); /*위도-Y*/
-//        urlBuilder.append("&" + URLEncoder.encode("xPos","UTF-8") + "=" + URLEncoder.encode(param[0], "UTF-8")); /*경도-X*/
-//        urlBuilder.append("&" + URLEncoder.encode("radius","UTF-8") + "=" + URLEncoder.encode("1000", "UTF-8")); /*반경*/
-//        urlBuilder.append("&" + URLEncoder.encode("pageNo","UTF-8") + "=" + URLEncoder.encode("1", "UTF-8")); /*페이지 번호*/
-//        urlBuilder.append("&" + URLEncoder.encode("numOfRows","UTF-8") + "=" + URLEncoder.encode("10", "UTF-8")); /*목록 건수*/
-//
-//        URL url = new URL(urlBuilder.toString());
-//        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-//        conn.setRequestMethod("GET");
-//        conn.setRequestProperty("Content-type", "application/json");
-//        System.out.println("Response code: " + conn.getResponseCode());
-//        BufferedReader rd;
-//        if(conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
-//            rd = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8));
-//        } else {
-//            rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
-//        }
-//        StringBuilder sb = new StringBuilder();
-//        String line;
-//        while ((line = rd.readLine()) != null) {
-//            sb.append(line);
-//        }
-//        rd.close();
-//        conn.disconnect();
-//        System.out.println(convertXML(sb.toString()).toString());
-//
-//        return ResponseEntity.ok(new SingleResponseDto<>(medicalMapper.infoToResponseDto(convertXML(sb.toString()))));
-//    }
 
     public JSONObject convertXML(String xml) throws JSONException {
         JSONObject json = XML.toJSONObject(xml);
