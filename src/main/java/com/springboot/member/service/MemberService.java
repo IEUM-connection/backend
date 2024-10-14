@@ -5,6 +5,7 @@ import com.springboot.exception.ExceptionCode;
 import com.springboot.member.entity.Guardian;
 import com.springboot.member.entity.Member;
 import com.springboot.member.repository.MemberRepository;
+import com.springboot.memberHistory.MemberHistory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -157,5 +158,10 @@ public class MemberService {
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
 
 
+    }
+
+
+    public MemberHistory saveMemberHistor(Member member){
+        MemberHistory memberHistory = new MemberHistory(member);
     }
 }
