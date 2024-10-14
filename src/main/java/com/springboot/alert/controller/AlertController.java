@@ -9,11 +9,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/alerts")
 public class AlertController {
 
   private final AlertService alertService;
@@ -22,24 +23,155 @@ public class AlertController {
     this.alertService = alertService;
   }
 
-  // 알림 발송 및 저장
   @PostMapping("/send-alert")
-  public ResponseEntity sendAlert(@RequestBody Alert alert) {
+  public ResponseEntity<?> sendAlert(@RequestBody Alert alert) {
     try {
       Alert savedAlert = alertService.sendAndSaveAlert(alert);
-      return ResponseEntity.ok().body(new AlertResponse(savedAlert.getId(), "알림이 성공적으로 발송되고 저장되었습니다."));
+      return ResponseEntity.ok().body(new AlertResponse(
+          savedAlert.getId(),
+          "알림이 성공적으로 발송되고 저장되었습니다.",
+          savedAlert.getAlertType()
+      ));
     } catch (Exception e) {
-      return ResponseEntity.internalServerError().body(new ErrorResponse("알림 발송 또는 저장 중 오류가 발생했습니다: " + e.getMessage()));
+      return ResponseEntity.internalServerError().body(new ErrorResponse(
+          "알림 발송 또는 저장 중 오류가 발생했습니다: " + e.getMessage()
+      ));
     }
   }
 
-  // 알림 목록 조회 (페이지네이션 적용)
   @GetMapping
   public ResponseEntity<?> getAllAlerts(@RequestParam int page, @RequestParam int size) {
-    Page<Alert> alertPage = alertService.getAllAlerts(PageRequest.of(page, size));
-    List<AlertResponse> alertResponses = alertPage.getContent().stream()
-        .map(alert -> new AlertResponse(alert.getId(), alert.getContent()))
-        .collect(Collectors.toList());
-    return ResponseEntity.ok().body(alertResponses);
+    try {
+      Page<Alert> alertPage = alertService.getAllAlerts(PageRequest.of(page, size));
+      List<AlertResponse> alertResponses = alertPage.getContent().stream()
+          .map(alert -> new AlertResponse(
+              alert.getId(),
+              alert.getContent(),
+              alert.getAlertType()
+          ))
+          .collect(Collectors.toList());
+      return ResponseEntity.ok().body(alertResponses);
+    } catch (Exception e) {
+      return ResponseEntity.internalServerError().body(new ErrorResponse(
+          "알림 목록 조회 중 오류가 발생했습니다: " + e.getMessage()
+      ));
+    }
+  }
+
+  @PostMapping("/send-help-alert/{adminName}")
+  public ResponseEntity<?> sendHelpAlert(@RequestBody Alert alert, @PathVariable String adminName) {
+    try {
+      Alert savedAlert = alertService.sendHelpAlert(alert, adminName);
+      return ResponseEntity.ok().body(new AlertResponse(
+          savedAlert.getId(),
+          "도움 요청 알림이 성공적으로 발송되었습니다.",
+          savedAlert.getAlertType()
+      ));
+    } catch (IllegalArgumentException e) {
+      return ResponseEntity.badRequest().body(new ErrorResponse(
+          "잘못된 요청: " + e.getMessage()
+      ));
+    } catch (Exception e) {
+      return ResponseEntity.internalServerError().body(new ErrorResponse(
+          "도움 요청 알림 발송 중 오류가 발생했습니다: " + e.getMessage()
+      ));
+    }
+  }
+
+  /**
+   * 특정 타입의 알림을 조회할 수 있는 엔드포인트
+   *
+   * @param type 알림 타입
+   * @param page 페이지 번호
+   * @param size 페이지 크기
+   * @return 해당 타입의 알림 목록
+   */
+  @GetMapping("/by-type")
+  public ResponseEntity<?> getAlertsByType(
+      @RequestParam String type,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size) {
+    List<String> allowedTypes = Arrays.asList("일반", "긴급", "공지", "정기");
+    if (!allowedTypes.contains(type)) {
+      return ResponseEntity.badRequest().body(new ErrorResponse("허용되지 않은 알림 타입입니다."));
+    }
+
+    try {
+      Page<Alert> alertPage = alertService.getAlertsByType(type, PageRequest.of(page, size));
+      List<AlertResponse> alertResponses = alertPage.getContent().stream()
+          .map(alert -> new AlertResponse(
+              alert.getId(),
+              alert.getContent(),
+              alert.getAlertType()
+          ))
+          .collect(Collectors.toList());
+      return ResponseEntity.ok().body(alertResponses);
+    } catch (Exception e) {
+      return ResponseEntity.internalServerError().body(new ErrorResponse(
+          "알림 목록 조회 중 오류가 발생했습니다: " + e.getMessage()
+      ));
+    }
+  }
+
+  /**
+   * 지정된 네 가지 타입의 알림만 조회할 수 있는 엔드포인트
+   *
+   * @param page 페이지 번호
+   * @param size 페이지 크기
+   * @return 지정된 타입의 알림 목록
+   */
+  @GetMapping("/selected-types")
+  public ResponseEntity<?> getSelectedTypesAlerts(
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size) {
+    // 조회할 알림 타입 목록
+    List<String> selectedTypes = Arrays.asList("일반", "긴급", "공지", "정기");
+
+    try {
+      Page<Alert> alertPage = alertService.getAlertsByTypes(selectedTypes, PageRequest.of(page, size));
+      List<AlertResponse> alertResponses = alertPage.getContent().stream()
+          .map(alert -> new AlertResponse(
+              alert.getId(),
+              alert.getContent(),
+              alert.getAlertType()
+          ))
+          .collect(Collectors.toList());
+      return ResponseEntity.ok().body(alertResponses);
+    } catch (Exception e) {
+      return ResponseEntity.internalServerError().body(new ErrorResponse(
+          "알림 목록 조회 중 오류가 발생했습니다: " + e.getMessage()
+      ));
+    }
+  }
+
+  /**
+   * 지정된 네 가지 타입을 제외한 알림을 조회할 수 있는 엔드포인트
+   *
+   * @param page 페이지 번호
+   * @param size 페이지 크기
+   * @return 제외된 타입을 제외한 알림 목록
+   */
+  @GetMapping("/exclude-types")
+  public ResponseEntity<?> getAlertsExcludingTypes(
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size) {
+    // 제외할 알림 타입 목록
+    List<String> excludedTypes = Arrays.asList("일반", "긴급", "공지", "정기");
+
+    try {
+      Page<Alert> alertPage = alertService.getAlertsExcludingTypes(excludedTypes, PageRequest.of(page, size));
+      List<AlertResponse> alertResponses = alertPage.getContent().stream()
+          .map(alert -> new AlertResponse(
+              alert.getId(),
+              alert.getContent(),
+              alert.getAlertType()
+          ))
+          .collect(Collectors.toList());
+      return ResponseEntity.ok().body(alertResponses);
+    } catch (Exception e) {
+      return ResponseEntity.internalServerError().body(new ErrorResponse(
+          "알림 목록 조회 중 오류가 발생했습니다: " + e.getMessage()
+      ));
+    }
   }
 }

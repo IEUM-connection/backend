@@ -9,13 +9,14 @@ import com.springboot.member.repository.MemberRepository;
 import com.springboot.utillity.FirebaseCloudMessageService;
 import com.springboot.utillity.FcmMessageDto;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +59,7 @@ public class AlertService {
         throw new IllegalArgumentException("Invalid recipient type");
     }
 
-    logger.info("Sending FCM messages to tokens: {}", tokens); // 토큰 목록 확인
+    logger.info("Sending FCM messages to tokens: {}", tokens);
 
     for (String token : tokens) {
       if (token != null && !token.isEmpty()) {
@@ -67,7 +68,7 @@ public class AlertService {
         fcmMessageDto.setTitle(alert.getAlertType());
         fcmMessageDto.setBody(alert.getContent());
 
-        logger.info("Sending FCM message to token: {}", token); // 각 토큰으로 전송 시 로그
+        logger.info("Sending FCM message to token: {}", token);
 
         String result = firebaseCloudMessageService.sendMessage(fcmMessageDto);
         if (result.startsWith("Successfully")) {
@@ -76,7 +77,7 @@ public class AlertService {
           savedAlert.setStatus("FAILED");
         }
 
-        logger.info("FCM message send result: {}", result); // 전송 결과 로그
+        logger.info("FCM message send result: {}", result);
       }
     }
 
@@ -96,7 +97,7 @@ public class AlertService {
         .filter(token -> token != null && !token.isEmpty())
         .toList();
 
-    logger.info("Retrieved Member FCM Tokens: {}", tokens); // 회원 토큰 확인 로그
+    logger.info("Retrieved Member FCM Tokens: {}", tokens);
     return tokens;
   }
 
@@ -106,12 +107,86 @@ public class AlertService {
         .filter(token -> token != null && !token.isEmpty())
         .toList();
 
-    logger.info("Retrieved Admin FCM Tokens: {}", tokens); // 관리자 토큰 확인 로그
+    logger.info("Retrieved Admin FCM Tokens: {}", tokens);
     return tokens;
   }
 
-  // 페이지네이션으로 알람 목록 조회하는 메서드 추가
-  public Page<Alert> getAllAlerts(PageRequest pageRequest) {
-    return alertRepository.findAll(pageRequest);
+  public Page<Alert> getAllAlerts(Pageable pageable) {
+    return alertRepository.findAll(pageable);
+  }
+
+  @Transactional
+  public Alert sendHelpAlert(Alert alert, String adminName) {
+    alert.setCreatedAt(LocalDateTime.now());
+    alert.setStatus("PENDING");
+    alert.setRecipient("관리자");
+    alert.setScheduledTime(LocalDateTime.now());
+
+    Alert savedAlert = alertRepository.save(alert);
+
+    Optional<Admin> adminOptional = adminRepository.findByName(adminName);
+    if (adminOptional.isPresent()) {
+      Admin admin = adminOptional.get();
+      String adminToken = admin.getFcmToken();
+
+      if (adminToken != null && !adminToken.isEmpty()) {
+        FcmMessageDto fcmMessageDto = new FcmMessageDto();
+        fcmMessageDto.setToken(adminToken);
+        fcmMessageDto.setTitle("도움 요청 알림");
+        fcmMessageDto.setBody(alert.getContent());
+
+        logger.info("Sending help request FCM message to admin: {}", adminName);
+
+        String result = firebaseCloudMessageService.sendMessage(fcmMessageDto);
+        if (result.startsWith("Successfully")) {
+          savedAlert.setStatus("SENT");
+        } else {
+          savedAlert.setStatus("FAILED");
+        }
+
+        logger.info("Help request FCM message send result: {}", result);
+      } else {
+        logger.warn("Admin {} has no FCM token", adminName);
+        savedAlert.setStatus("FAILED");
+      }
+    } else {
+      logger.warn("Admin not found: {}", adminName);
+      savedAlert.setStatus("FAILED");
+    }
+
+    return alertRepository.save(savedAlert);
+  }
+
+  /**
+   * 알림 타입별로 알림을 조회하는 메서드
+   *
+   * @param type 알림 타입
+   * @param pageable 페이지 정보
+   * @return 해당 타입의 알림 페이지
+   */
+  public Page<Alert> getAlertsByType(String type, Pageable pageable) {
+    return alertRepository.findByAlertType(type, pageable);
+  }
+
+  /**
+   * 지정된 여러 알림 타입으로 알림을 조회하는 메서드
+   *
+   * @param types 알림 타입 목록
+   * @param pageable 페이지 정보
+   * @return 해당 타입들의 알림 페이지
+   */
+  public Page<Alert> getAlertsByTypes(List<String> types, Pageable pageable) {
+    return alertRepository.findByAlertTypeIn(types, pageable);
+  }
+
+  /**
+   * 지정된 여러 알림 타입을 제외하고 알림을 조회하는 메서드
+   *
+   * @param types 제외할 알림 타입 목록
+   * @param pageable 페이지 정보
+   * @return 제외된 타입을 제외한 알림 페이지
+   */
+  public Page<Alert> getAlertsExcludingTypes(List<String> types, Pageable pageable) {
+    return alertRepository.findByAlertTypeNotIn(types, pageable);
   }
 }
