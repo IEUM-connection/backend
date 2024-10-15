@@ -35,7 +35,8 @@ public class AlertController {
           "알림이 성공적으로 발송되고 저장되었습니다.",
           savedAlert.getAlertType(),
           savedAlert.getCreatedAt(),
-          savedAlert.getStatus()
+          savedAlert.getStatus(),
+          savedAlert.getRecipient()
       ));
     } catch (Exception e) {
       return ResponseEntity.internalServerError().body(new ErrorResponse(
@@ -54,7 +55,8 @@ public class AlertController {
               alert.getContent(),
               alert.getAlertType(),
               alert.getCreatedAt(),
-              alert.getStatus()
+              alert.getStatus(),
+              alert.getRecipient()
           ))
           .collect(Collectors.toList());
       return ResponseEntity.ok().body(alertResponses);
@@ -74,7 +76,8 @@ public class AlertController {
               "도움 요청 알림이 성공적으로 발송되었습니다.",
               savedAlert.getAlertType(),
               savedAlert.getCreatedAt(),
-              savedAlert.getStatus() // 상태를 추가한 5번째 인수
+              savedAlert.getStatus(),
+              savedAlert.getRecipient()
       ));
     } catch (IllegalArgumentException e) {
       return ResponseEntity.badRequest().body(new ErrorResponse(
@@ -113,7 +116,8 @@ public class AlertController {
               alert.getContent(),
               alert.getAlertType(),
               alert.getCreatedAt(),
-              alert.getStatus()
+              alert.getStatus(),
+              alert.getRecipient()
           ))
           .collect(Collectors.toList());
       return ResponseEntity.ok().body(alertResponses);
@@ -146,7 +150,8 @@ public class AlertController {
               alert.getContent(),
               alert.getAlertType(),
               alert.getCreatedAt(),
-              alert.getStatus()
+              alert.getStatus(),
+              alert.getRecipient()
           ))
           .collect(Collectors.toList());
       return ResponseEntity.ok().body(alertResponses);
@@ -179,7 +184,8 @@ public class AlertController {
               alert.getContent(),
               alert.getAlertType(),
               alert.getCreatedAt(),
-              alert.getStatus()
+              alert.getStatus(),
+              alert.getRecipient()
           ))
           .collect(Collectors.toList());
       return ResponseEntity.ok().body(alertResponses);
@@ -208,7 +214,8 @@ public class AlertController {
               alert.getContent(),
               alert.getAlertType(),
               alert.getCreatedAt(),
-              alert.getStatus()
+              alert.getStatus(),
+              alert.getRecipient()
       );
 
       return ResponseEntity.ok().body(alertResponse);
