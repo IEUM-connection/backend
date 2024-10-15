@@ -1,12 +1,9 @@
 package com.springboot.utillity;
 
-import com.springboot.member.entity.Admin;
-import com.springboot.member.entity.Member;
 import com.springboot.member.service.AdminService;
 import com.springboot.member.service.MemberService;
 import net.nurigo.sdk.NurigoApp;
 import net.nurigo.sdk.message.exception.NurigoMessageNotReceivedException;
-import net.nurigo.sdk.message.model.Message;
 import net.nurigo.sdk.message.response.MultipleDetailMessageSentResponse;
 import net.nurigo.sdk.message.service.DefaultMessageService;
 import org.slf4j.Logger;
@@ -36,30 +33,28 @@ public class SendMessageService {
         this.memberService = memberService;
     }
 
-    public void sendMessage(SmsDto sms, String memberCode) {
-        Message message = new Message();
+    public void sendMessage(Message msg) {
+        net.nurigo.sdk.message.model.Message message = new net.nurigo.sdk.message.model.Message();
 
         if (messageService == null) {
             this.messageService = NurigoApp.INSTANCE.initialize(apikey, apisecret, "https://api.coolsms.co.kr");
         }
 
-        ArrayList<Message> messageList = new ArrayList<>();
-
-        Member member = memberService.findMember(memberCode);
+        ArrayList<net.nurigo.sdk.message.model.Message> messageList = new ArrayList<>();
 
         // 발신번호 및 수신번호는 반드시 01012345678 형태로 입력되어야 합니다.
         message.setFrom(phonenum);
-        message.setTo(member.getGuardian().getPhone());
-        message.setText(sms.getBody());
+        message.setTo(msg.getGudianNum());
+        message.setText(msg.getBody());
 
         messageList.add(message);
 
-        if (sms.getIsAdmin()) {
-            message = new Message();
+        if (msg.getAdminNum() != null && msg.getAdminNum() != "") {
+            message = new net.nurigo.sdk.message.model.Message();
 
             message.setFrom(phonenum);
-            message.setTo(member.getAdminPhone());
-            message.setText(sms.getBody());
+            message.setTo(msg.getAdminNum());
+            message.setText(msg.getBody());
 
             messageList.add(message);
         }
