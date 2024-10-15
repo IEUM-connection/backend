@@ -104,6 +104,9 @@ public class Member {
     private String fcmToken;
 
     private  String adminName;
+
+    private String adminPhone;
+
     public enum MemberStatus {
         ACTIVE,  // 활성 상태
         AWAITING_APPROVAL,  // 승인 대기 상태
