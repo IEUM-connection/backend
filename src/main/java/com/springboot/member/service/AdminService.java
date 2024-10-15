@@ -127,7 +127,7 @@ public class AdminService {
     }
 
 
-    public Admin findAdminByLocation(String address) {
+    public String findAdminNameByLocation(String address) {
         String[] parts = address.split(" ");
         String district = null;
 
@@ -146,12 +146,16 @@ public class AdminService {
         // "구" 단위를 사용해 관리자를 검색
         Optional<Admin> admin = adminRepository.findByLocationContaining(district);
         if (admin.isPresent()) {
-            return admin  .orElseThrow(() -> new BusinessLogicException(ExceptionCode.ADMIN_NOT_FOUND));
+            return admin.get().getName();
         } else {
             throw new BusinessLogicException(ExceptionCode.ADMIN_NOT_FOUND);
         }
 
     }
-
+    //FCM 토큰
+    public Admin updateFcmToken(Admin admin, String fcmToken) {
+        admin.setFcmToken(fcmToken);
+        return adminRepository.save(admin);
+    }
 
 }
