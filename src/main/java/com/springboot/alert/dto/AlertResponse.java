@@ -14,4 +14,5 @@ public class AlertResponse {
   private String message;
   private String alertType;
   private LocalDateTime createdAt;
+  private String recipient;
 }

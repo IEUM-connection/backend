@@ -198,4 +198,15 @@ public class AlertService {
     Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
     return alertRepository.findByAlertTypeNotIn(types, pageable);
   }
+
+  /**
+          * 알림 ID로 단일 알림을 조회하는 메서드
+   *
+   * @param id 알림 ID
+   * @return 해당 알림
+   */
+  public Optional<Alert> getAlertById(Long id) {
+    return alertRepository.findById(id);
+  }
 }
+
