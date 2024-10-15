@@ -50,6 +50,7 @@ public class QuestionDto {
         private LocalDateTime modifiedAt;
         private Question.QuestionStatus questionStatus;
         private String responseContent;
+        private String guardianPhone;
 
     }
 }
