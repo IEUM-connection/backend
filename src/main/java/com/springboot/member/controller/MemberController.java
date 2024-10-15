@@ -2,6 +2,7 @@ package com.springboot.member.controller;
 
 import com.springboot.dto.*;
 import com.springboot.member.dto.MemberDto;
+import com.springboot.member.entity.Admin;
 import com.springboot.member.entity.Guardian;
 import com.springboot.member.entity.Member;
 import com.springboot.member.mapper.MemberMapper;
@@ -55,12 +56,13 @@ public class MemberController {
 
         // 위치에 따른 어드민 이름 조회
         String address = memberPostDto.getAddress();  // memberPostDto에 address가 있다고 가정
-        String adminName = adminService.findAdminNameByLocation(address);
+        Admin admin = adminService.findAdminByLocation(address);
         ;
         // 멤버 DTO -> 엔티티로 변환
         Member member = memberMapper.memberPostDtoToMember(memberPostDto);
 
-        member.setAdminName(adminName);
+        member.setAdminName(admin.getName());
+        member.setAdminPhone(admin.getPhone());
         member.setGuardian(guardian);  // 가디언 정보 설정
 
         // 멤버 생성
