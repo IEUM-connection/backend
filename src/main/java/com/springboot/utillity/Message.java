@@ -7,9 +7,11 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SmsDto
+public class Message
 {
     private String body;
 
-    private Boolean isAdmin;
+    private String adminNum;
+
+    private String gudianNum;
 }
