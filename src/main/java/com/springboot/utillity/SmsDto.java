@@ -11,8 +11,5 @@ public class SmsDto
 {
     private String body;
 
-    private String from;
-
-    private String to;
-
+    private Boolean isAdmin;
 }
