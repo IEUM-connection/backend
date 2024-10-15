@@ -86,6 +86,7 @@ public class MemberDto {
         private String guardianName;  // 보호자의 이름
         private String guardianPhone; // 보호자의 전화번호
         private String adminName;
+        private String adminPhone;
         // 휴대폰 미사용 시간
         private int phoneInactiveTimeMs;
         private int powerUsage;
