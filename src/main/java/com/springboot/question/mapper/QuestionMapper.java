@@ -17,6 +17,7 @@ public interface QuestionMapper {
 
     @Mapping(source = "answer.responseContent", target = "responseContent")
     @Mapping(source = "guardian.name", target = "name")
+    @Mapping(source = "guardian.phone", target = "guardianPhone")
     QuestionDto.Response questionToQuestionResponseDto(Question question);
 
     List<QuestionDto.Response> questionsToQuestionResponseDtos(List<Question> questions);
