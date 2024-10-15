@@ -43,7 +43,7 @@ public class AlertService {
   @Transactional
   public Alert sendAndSaveAlert(Alert alert) {
     alert.setCreatedAt(LocalDateTime.now());
-    alert.setStatus("PENDING");
+    alert.setStatus("송신완료");
     Alert savedAlert = alertRepository.save(alert);
 
     List<String> tokens = new ArrayList<>();
@@ -51,8 +51,7 @@ public class AlertService {
       case "전체":
         tokens.addAll(getAllFcmTokens());
         break;
-      case "관리자":
-        tokens.addAll(getAdminFcmTokens());
+      case "보호자":
         break;
       case "대상자":
         tokens.addAll(getMemberFcmTokens());
@@ -89,7 +88,6 @@ public class AlertService {
   private List<String> getAllFcmTokens() {
     List<String> tokens = new ArrayList<>();
     tokens.addAll(getMemberFcmTokens());
-    tokens.addAll(getAdminFcmTokens());
     return tokens;
   }
 
@@ -103,15 +101,15 @@ public class AlertService {
     return tokens;
   }
 
-  private List<String> getAdminFcmTokens() {
-    List<String> tokens = adminRepository.findAll().stream()
-        .map(Admin::getFcmToken)
-        .filter(token -> token != null && !token.isEmpty())
-        .toList();
-
-    logger.info("Retrieved Admin FCM Tokens: {}", tokens);
-    return tokens;
-  }
+//  private List<String> getAdminFcmTokens() {
+//    List<String> tokens = adminRepository.findAll().stream()
+//        .map(Admin::getFcmToken)
+//        .filter(token -> token != null && !token.isEmpty())
+//        .toList();
+//
+//    logger.info("Retrieved Admin FCM Tokens: {}", tokens);
+//    return tokens;
+//  }
 
   public Page<Alert> getAllAlerts(int page, int size) {
     Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
@@ -121,7 +119,7 @@ public class AlertService {
   @Transactional
   public Alert sendHelpAlert(Alert alert, String adminName) {
     alert.setCreatedAt(LocalDateTime.now());
-    alert.setStatus("PENDING");
+    alert.setStatus("송신완료");
     alert.setRecipient("관리자");
     alert.setScheduledTime(LocalDateTime.now());
 
