@@ -12,7 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -165,6 +165,14 @@ public class MemberService {
         return members;
     }
 
+    public List<Member> getMembers(Member.MemberStatus status) {
+        List<Member> members = memberRepository.findByMemberStatus(status);
+        if (members.isEmpty()) {
+            throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
+        }
+        return members;
+    }
+
     public Member approveMember(Long memberId) {
         Member member = getMember(memberId);
         member.setMemberStatus(Member.MemberStatus.ACTIVE);
@@ -200,18 +208,22 @@ public class MemberService {
     }
 
 
-    public Member getMemberByGuardian(Guardian guardian){
+    public Member getMemberByGuardian(Guardian guardian) {
+        List<Member> members = memberRepository.findByGuardian(guardian);
 
-        return memberRepository.findByGuardian(guardian)
-                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
+        if (members.isEmpty()) {
+            throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
+        }
+
+        // 여러 멤버 중 첫 번째 멤버 반환 (필요한 경우 다른 처리도 가능)
+        return members.get(0);
     }
 
     private void saveMemberHistory(Member member) {
-
         MemberHistory memberHistory = new MemberHistory();
         memberHistory.setMemberId(member.getMemberId());
         memberHistory.setMemberStatus(member.getMemberStatus());
-        memberHistory.setAddress(memberHistory.getAddress());
+        memberHistory.setAddress(member.getAddress());  // 수정된 부분
         memberHistory.setMemberCode(member.getMemberCode());
         memberHistory.setAdminNote(member.getAdminNote());
         memberHistory.setAdminName(member.getAdminName());
@@ -219,7 +231,15 @@ public class MemberService {
         memberHistory.setTel(member.getTel());
         memberHistory.setMedicalHistory(member.getMedicalHistory());
         memberHistory.setAge(member.getAge());
-        memberHistory.setBirthDate(member.getBirthDate());
+
+        // birthDate가 null일 경우 처리
+        if (member.getBirthDate() != null) {
+            memberHistory.setBirthDate(member.getBirthDate());
+        } else {
+            // 기본값을 설정하거나 예외 처리를 할 수 있습니다.
+            memberHistory.setBirthDate(LocalDate.now());  // 오늘 날짜를 기본값으로 사용
+        }
+
         memberHistory.setPhone(member.getPhone());
         memberHistory.setCreatedAt(member.getCreatedAt());
         memberHistory.setDetailedAddress(member.getDetailedAddress());
@@ -229,13 +249,14 @@ public class MemberService {
         memberHistory.setLatitude(member.getLatitude());
         memberHistory.setLongitude(member.getLongitude());
         memberHistory.setMilkDeliveryRequest(member.getMilkDeliveryRequest());
-       memberHistory.setPostalCode(member.getPostalCode());
-       memberHistory.setPowerUsage(member.getPowerUsage());
-       memberHistory.setRelationship(member.getRelationship());
-       memberHistory.setRole(member.getRole());
-       memberHistory.setPhoneInactiveDuration(member.getPhoneInactiveDuration());
-       memberHistory.setName(member.getName());
+        memberHistory.setPostalCode(member.getPostalCode());
+        memberHistory.setPowerUsage(member.getPowerUsage());
+        memberHistory.setRelationship(member.getRelationship());
+        memberHistory.setRole(member.getRole());
+        memberHistory.setPhoneInactiveDuration(member.getPhoneInactiveDuration());
+        memberHistory.setName(member.getName());
         memberHistory.setGuardianId(member.getGuardian().getGuardianId());
+
         memberHistoryRepository.save(memberHistory);
     }
 

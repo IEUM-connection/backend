@@ -4,7 +4,6 @@ package com.springboot.member.service;
 import com.springboot.exception.BusinessLogicException;
 import com.springboot.exception.ExceptionCode;
 import com.springboot.member.entity.Guardian;
-import com.springboot.member.entity.Member;
 import com.springboot.member.repository.GuardianRepository;
 import org.springframework.context.ApplicationEventPublisher;
 
@@ -13,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import static com.springboot.member.entity.Guardian.GuardianStatus.*;
@@ -143,7 +143,13 @@ public class GuardianService {
         return guardianRepository.save(guardian);
     }
 
-
+    public List<Guardian> getGuardians(Guardian.GuardianStatus status) {
+        List<Guardian> guardians = guardianRepository.findAll();
+        if (guardians.isEmpty()) {
+            throw new BusinessLogicException(ExceptionCode.GUARDIAN_NOT_FOUND);
+        }
+        return guardians;
+    }
 }
 
 
