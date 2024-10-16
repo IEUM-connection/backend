@@ -162,6 +162,14 @@ public class MemberService {
         return members;
     }
 
+    public List<Member> getMembers(Member.MemberStatus status) {
+        List<Member> members = memberRepository.findByMemberStatus(status);
+        if (members.isEmpty()) {
+            throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
+        }
+        return members;
+    }
+
     public Member approveMember(Long memberId) {
         Member member = getMember(memberId);
         member.setMemberStatus(Member.MemberStatus.ACTIVE);

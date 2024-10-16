@@ -14,4 +14,6 @@ public class Message
     private String adminNum;
 
     private String gudianNum;
+
+    private Boolean isMember;
 }
