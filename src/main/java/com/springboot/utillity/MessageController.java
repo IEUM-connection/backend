@@ -7,16 +7,23 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class SendMessageController {
-    private final SendMessageService sendMessageService;
+public class MessageController {
+    private final MessageService messageService;
 
-    public SendMessageController(SendMessageService sendMessageService, MemberService memberService) {
-        this.sendMessageService = sendMessageService;
+    public MessageController(MessageService messageService, MemberService memberService) {
+        this.messageService = messageService;
     }
 
     @PostMapping("/send-sms")
     public ResponseEntity<String> sendMessage(@RequestBody Message requestDto) {
-        sendMessageService.sendMessage(requestDto);
+        messageService.sendMessage(requestDto);
+
+        return ResponseEntity.ok(requestDto.getBody());
+    }
+
+    @PostMapping("/send-allsms")
+    public ResponseEntity<String> sendAllMessage(@RequestBody Message requestDto) {
+        messageService.sendAllMessage(requestDto);
 
         return ResponseEntity.ok(requestDto.getBody());
     }
