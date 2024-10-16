@@ -36,6 +36,10 @@ public class JwtTokenizer {
     private int accessTokenExpirationMinutes;
 
     @Getter
+    @Value("${jwt.member-access-token-expiration-minutes}")
+    private int memberAccessTokenExpirationMinutes;
+
+    @Getter
     @Value("${jwt.refresh-token-expiration-minutes}")
     private int refreshTokenExpirationMinutes;
 

@@ -35,8 +35,5 @@ public class Alert {
   private LocalDateTime createdAt;
 
   @Column(nullable = false)
-  private String status;
-
-  @Column(nullable = false)
-  private boolean isRead = false; // 읽음 여부 추가
+  private String status;// 읽음 여부 추가
 }

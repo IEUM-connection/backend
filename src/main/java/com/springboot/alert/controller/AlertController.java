@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 
@@ -33,7 +34,9 @@ public class AlertController {
           savedAlert.getId(),
           "알림이 성공적으로 발송되고 저장되었습니다.",
           savedAlert.getAlertType(),
-          savedAlert.getCreatedAt()
+          savedAlert.getCreatedAt(),
+          savedAlert.getStatus(),
+          savedAlert.getRecipient()
       ));
     } catch (Exception e) {
       return ResponseEntity.internalServerError().body(new ErrorResponse(
@@ -51,7 +54,9 @@ public class AlertController {
               alert.getId(),
               alert.getContent(),
               alert.getAlertType(),
-              alert.getCreatedAt()
+              alert.getCreatedAt(),
+              alert.getStatus(),
+              alert.getRecipient()
           ))
           .collect(Collectors.toList());
       return ResponseEntity.ok().body(alertResponses);
@@ -67,10 +72,12 @@ public class AlertController {
     try {
       Alert savedAlert = alertService.sendHelpAlert(alert, adminName);
       return ResponseEntity.ok().body(new AlertResponse(
-          savedAlert.getId(),
-          "도움 요청 알림이 성공적으로 발송되었습니다.",
-          savedAlert.getAlertType(),
-          savedAlert.getCreatedAt()
+              savedAlert.getId(),
+              "도움 요청 알림이 성공적으로 발송되었습니다.",
+              savedAlert.getAlertType(),
+              savedAlert.getCreatedAt(),
+              savedAlert.getStatus(),
+              savedAlert.getRecipient()
       ));
     } catch (IllegalArgumentException e) {
       return ResponseEntity.badRequest().body(new ErrorResponse(
@@ -108,7 +115,9 @@ public class AlertController {
               alert.getId(),
               alert.getContent(),
               alert.getAlertType(),
-              alert.getCreatedAt()
+              alert.getCreatedAt(),
+              alert.getStatus(),
+              alert.getRecipient()
           ))
           .collect(Collectors.toList());
       return ResponseEntity.ok().body(alertResponses);
@@ -140,7 +149,9 @@ public class AlertController {
               alert.getId(),
               alert.getContent(),
               alert.getAlertType(),
-              alert.getCreatedAt()
+              alert.getCreatedAt(),
+              alert.getStatus(),
+              alert.getRecipient()
           ))
           .collect(Collectors.toList());
       return ResponseEntity.ok().body(alertResponses);
@@ -172,7 +183,9 @@ public class AlertController {
               alert.getId(),
               alert.getContent(),
               alert.getAlertType(),
-              alert.getCreatedAt()
+              alert.getCreatedAt(),
+              alert.getStatus(),
+              alert.getRecipient()
           ))
           .collect(Collectors.toList());
       return ResponseEntity.ok().body(alertResponses);
@@ -180,6 +193,36 @@ public class AlertController {
       return ResponseEntity.internalServerError().body(new ErrorResponse(
           "알림 목록 조회 중 오류가 발생했습니다: " + e.getMessage()
       ));
+    }
+  }
+
+  @GetMapping("/{alertId}")
+  public ResponseEntity<?> getAlertById(@PathVariable("alertId") Long id) {
+    try {
+      // 알림 ID로 조회
+      Optional<Alert> alertOptional = alertService.getAlertById(id);
+
+      // 알림이 존재하지 않을 경우 예외 처리
+      if (alertOptional.isEmpty()) {
+        return ResponseEntity.badRequest().body(new ErrorResponse("해당 ID의 알림이 존재하지 않습니다."));
+      }
+
+      // 조회된 알림 정보를 AlertResponse 객체로 변환하여 반환
+      Alert alert = alertOptional.get();
+      AlertResponse alertResponse = new AlertResponse(
+              alert.getId(),
+              alert.getContent(),
+              alert.getAlertType(),
+              alert.getCreatedAt(),
+              alert.getStatus(),
+              alert.getRecipient()
+      );
+
+      return ResponseEntity.ok().body(alertResponse);
+    } catch (IllegalArgumentException e) {
+      return ResponseEntity.badRequest().body(new ErrorResponse("잘못된 알림 ID입니다: " + e.getMessage()));
+    } catch (Exception e) {
+      return ResponseEntity.internalServerError().body(new ErrorResponse("알림 조회 중 오류가 발생했습니다: " + e.getMessage()));
     }
   }
 }

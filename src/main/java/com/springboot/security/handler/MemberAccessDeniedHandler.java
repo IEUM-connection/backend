@@ -1,8 +1,6 @@
 package com.springboot.security.handler;
 
-import com.springboot.member.entity.Guardian;
-import com.springboot.member.entity.Member;
-import com.springboot.security.userdetails.CustomAuthenticationToken;
+
 import com.springboot.security.utils.ErrorResponder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

@@ -27,7 +27,7 @@ public class MemberDto {
         private LocalDate birthDate;
         private String relationship;
         private String medicalHistory;
-        private boolean milkDeliveryRequest;
+        private Boolean milkDeliveryRequest;
         private String documentAttachment;
         // FCM 토큰 코드 추가
         private String fcmToken;
@@ -50,7 +50,7 @@ public class MemberDto {
         private String medicalHistory;
         private String latitude;
         private String longitude;
-        private boolean milkDeliveryRequest;
+        private Boolean milkDeliveryRequest;
         private String documentAttachment;
         private int powerUsage;
         // FCM 토큰 코드 추가
@@ -76,7 +76,7 @@ public class MemberDto {
         private String adminNote;
         private String latitude;
         private String longitude;
-        private boolean milkDeliveryRequest;
+        private Boolean milkDeliveryRequest;
         private String documentAttachment;
         private LocalDateTime createdAt;
         private LocalDate birthDate;
@@ -87,6 +87,7 @@ public class MemberDto {
         private String guardianPhone; // 보호자의 전화번호
         private String adminName;
         private String adminPhone;
+        private String emergencyContact;
         // 휴대폰 미사용 시간
         private int phoneInactiveTimeMs;
         private int powerUsage;

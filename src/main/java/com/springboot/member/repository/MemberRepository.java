@@ -19,14 +19,13 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Page<Member> findByMemberStatus(Member.MemberStatus status, Pageable pageable);
 
     List<Member> findAll();
+    List<Member> findByMemberStatus(Member.MemberStatus status);
     Page<Member> findAll(Pageable pageable);
 
     List<Member> findByRole(String role);
 
     boolean existsByMemberCode(String memberCode);
 
-    boolean existsByGuardian(Guardian guardian);
-
-    Optional<Member> findByGuardian(Guardian guardian);
+    List<Member> findByGuardian(Guardian guardian);
 }
 
