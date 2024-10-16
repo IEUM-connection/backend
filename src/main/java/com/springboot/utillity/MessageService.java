@@ -81,7 +81,7 @@ public class MessageService {
     }
 
     public void sendAllMessage(Message msg) {
-        net.nurigo.sdk.message.model.Message message = new net.nurigo.sdk.message.model.Message();
+
 
         if (messageService == null) {
             this.messageService = NurigoApp.INSTANCE.initialize(apikey, apisecret, "https://api.coolsms.co.kr");
@@ -92,9 +92,10 @@ public class MessageService {
         // 멤버에게
         if(msg.getIsMember()){
             List<Member> members = memberService.getMembers(Member.MemberStatus.ACTIVE);
-            for (int i = 0; i < members.size(); i++){
+            for (Member member : members){
+                net.nurigo.sdk.message.model.Message message = new net.nurigo.sdk.message.model.Message();
                 message.setFrom(phonenum);
-                message.setTo(members.get(i).getPhone().replaceAll("-", ""));
+                message.setTo(member.getPhone().replaceAll("-", ""));
                 message.setText(msg.getBody());
 
                 messageList.add(message);
@@ -103,9 +104,10 @@ public class MessageService {
         else {
             // 가디언에게
             List<Guardian> guardians = guardianService.getGuardians(Guardian.GuardianStatus.GUARDIAN_ACTIVE);
-            for (int i = 0; i < guardians.size(); i++){
+            for (Guardian guardian : guardians){
+                net.nurigo.sdk.message.model.Message message = new net.nurigo.sdk.message.model.Message();
                 message.setFrom(phonenum);
-                message.setTo(guardians.get(i).getPhone().replaceAll("-", ""));
+                message.setTo(guardian.getPhone().replaceAll("-", ""));
                 message.setText(msg.getBody());
 
                 messageList.add(message);
