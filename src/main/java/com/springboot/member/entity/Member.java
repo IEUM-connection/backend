@@ -78,7 +78,7 @@ public class Member {
     private String role;  // 역할 (예: ROLE_MEMBER, ROLE_ADMIN 등)
 
     @Column(nullable = true)
-    private boolean milkDeliveryRequest;  // 우유 배달 요청 여부
+    private Boolean milkDeliveryRequest;  // 우유 배달 요청 여부
 
     @Column(length = 255)
     private String documentAttachment;  // 문서 첨부

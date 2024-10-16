@@ -84,6 +84,9 @@ public class MemberService {
         if (updatedMember.getPostalCode() != null) {
             member.setPostalCode(updatedMember.getPostalCode());
         }
+        if (updatedMember.getMilkDeliveryRequest() != null) {
+            member.setMilkDeliveryRequest(updatedMember.getMilkDeliveryRequest());
+        }
         if (updatedMember.getEmergencyContact() != null) {
             member.setEmergencyContact(updatedMember.getEmergencyContact());
         }
@@ -225,7 +228,7 @@ public class MemberService {
         memberHistory.setFcmToken(member.getFcmToken());
         memberHistory.setLatitude(member.getLatitude());
         memberHistory.setLongitude(member.getLongitude());
-        memberHistory.setMilkDeliveryRequest(member.isMilkDeliveryRequest());
+        memberHistory.setMilkDeliveryRequest(member.getMilkDeliveryRequest());
        memberHistory.setPostalCode(member.getPostalCode());
        memberHistory.setPowerUsage(member.getPowerUsage());
        memberHistory.setRelationship(member.getRelationship());
